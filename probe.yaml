@@ -1,0 +1,21 @@
+# probe to analyse the source-miner project itself   
+
+commonOrigin: './'
+
+rootsToExplore: 
+  - 'explore'
+  - 'probes'
+  - 'samples'
+ 
+keepExtension:
+  includes: 
+    - '.mjs'
+    - '.yaml'
+
+ignoreComments: on
+    
+regex: 
+  pattern: '/file/'
+  flags: i
+
+rank_key: on

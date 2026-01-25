@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "csv-parser": "^3.0.0",
+    "csv-writer": "^1.6.0",
+    "js-yaml": "^4.1.0",
+    "markdown-it": "^14.0.0",
+    "markdown-it-mermaid": "^0.2.0",
+    "pdf-parse": "^1.1.1",
+    "pg": "^8.11.3",
+    "dotenv": "^16.4.7",
+    "pg-promise": "^11.5.4",
+    "plantuml-encoder": "^1.4.0"
+  }
+}

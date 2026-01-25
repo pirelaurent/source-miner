@@ -1,0 +1,42 @@
+
+commonOrigin: './'
+rootsToExplore: []
+fullPathFromOs: off 
+
+skipDirIfName:
+  includes: []
+  notIncludes:  []
+
+skipFileIfName:
+  includes: []
+  notIncludes: []
+
+keepExtension:
+  includes: 
+    - '.yaml' # will be replaced later by code according to each test case 
+
+
+# optional debug on the flow 
+traceSelectedDir: off  
+traceRejectedDir: off
+traceSelectedFile: off
+traceRejectedFile: off
+
+regex: # will be replaced later by code according to each test case
+  pattern: '/where is Charlie/'
+  flags: 'g' 
+
+ignoreComments: on 
+
+traceMatchingLines: off
+showLinesBefore: 0
+showLinesAfter : 0
+
+
+detailedReport: off
+
+separator: ' | ' # ¤ \t , ; 
+
+rank_key_path_line: off
+rank_key_path: off
+rank_key: off

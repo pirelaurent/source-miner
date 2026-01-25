@@ -1,0 +1,84 @@
+
+
+#----------------------------------
+# SECTION Root directories for exploration 
+#----------------------------------
+
+# Disk based start of exploration  
+# under mac or wsl : commonOrigin: '~//...'
+
+commonOrigin: '~//dev/bigData/mySandBox/'
+
+# --- list of root directories to explore under commonOrigin
+# if empty [] => all commonOrigin will be explored 
+
+rootsToExplore: 
+  - 'backend'
+
+
+# file names output:  full long os path or path from rootsToExplore
+fullPathFromOs: off 
+
+#----------------------------------
+# SECTION filter on directories'names 
+#----------------------------------
+
+skipDirIfName:
+# reject a directory if its name : 
+  includes: ['test','generated','s5000f']
+  notIncludes:  [] # for debugging
+
+# optional debug on the flow 
+traceSelectedDir: off  
+traceRejectedDir: off
+
+#----------------------------------
+# SECTION Filter on files pathName 
+#----------------------------------
+
+skipFileIfName:
+  includes: []
+  #retains only files if any of those substrings found in full file path
+  notIncludes: [] # skip all others
+  
+# scan only extensions :
+keepExtension:
+  includes: 
+    - '.java'
+
+
+# optional debug on the flow 
+traceSelectedFile: off
+traceRejectedFile: off
+
+
+#----------------------------------
+# search  
+#---------------------------------
+regex:
+  pattern: '/where is Charlie/'
+  flags: 'g' # g - global=all occurences, i — ignore case,  m - multiLignes
+  #----------------  on command line '/where is Charlie/g' -----------
+
+ignoreComments: off
+
+# ----- trace on the fly or not
+traceMatchingLines: off
+showLinesBefore: 0
+showLinesAfter : 0
+
+#----------------------------------
+# Reports 
+#----------------------------------
+# intermediate report for each rootToExplore
+detailedReport: off
+
+# --- add to reports : results array 
+separator: ' | ' # ¤ \t , ; 
+
+rank_key_path_line: off
+rank_key_path: off
+rank_key: off
+
+
+
