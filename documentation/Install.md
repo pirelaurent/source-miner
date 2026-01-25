@@ -54,57 +54,55 @@ Without regex on the command line, this will use default regex in probe : *'/whe
 
 ### Results (at redaction time) 
 
+        pirla@Mac source-miner % node search.mjs ./probes/autoprobe.yaml '/file/i'
+        ------------------------------- probe parameters -------------------------------
+        : roots: [./] x [explore,test,samples,probes]
+        : regex: '/file/gim'  (comments ignored)
+        : extensions:[.mjs,.yaml]
+        --------------------------------------------------------------------------------
+        run sequential
+        :-----      end of exploration of group [explore,test,samples,probes]      -----
+        :     matching files: 17 / 21 from 5 / 5 directories
+        :     found 253 regex:   '/file/gim'
+        :     parsed lines: 2 670 matching: 206 / 2670 empty: 0  comments: 0 (not filtered)
+        --------------------------- Time elapsed :  0s 13ms  ---------------------------
 
-    ------------------------------- probe parameters -------------------------------
-    : roots: [./] x [explore,probes]
-    : regex: '/where is Charlie/gm'  -per line  -comment skipped"
-    : extensions:[.js,.ts,.mjs,.yaml]
-    --------------------------------------------------------------------------------
-    --------------           start exploration of :/explore           --------------
-    --------------           start exploration of :/probes           ---------------
-    -------           end of exploration of group [explore,probes]           -------
-    :     matching files: 17 / 17 from 3 / 3 directories
-    :     matching lines: 2 / 2 331 for 2 match: '/where is Charlie/gm'
-    :     parsed lines: 1 351 empty: 420  comments: 560 (ignored)
-    --------------------------- Time elapsed :  0s 26ms  ---------------------------
 
+### you can test your regex with command line 
 
-### Tests other regex on the command line  
-
-    node search.mjs ./probes/autoProbe '/file/i'
-    
-or in verbose detailed regex
-
-    node search.mjs ./probes/autoProbe '{"pattern":"file","flags":"i"}'
-
+    node search.mjs ./probes/autoProbe '/Charlie/'
 
 Your installation is working.   
 
-### performance with/without comments'filter
+### ignoreComments
 
-A scan on a very large project gives the following timing:
+By default ***off*** (don't ignore comments), when ***on***, comments are removed from source codes before the search.
 
-#### full text : *ignoreComments: off*  
+#### Performance difference : 5 times 
 
+ *ignoreComments: off*  on a large project : 
+    --------------------------------------------------------------------------------
     :     matching files: 12748 / 12750 from 2072 / 2148 directories
     :     found 133443 match
     -------------------------- Time elapsed :  0s 855ms  ---------------------------
 
 
-#### costly : removing comments from search : *ignoreComments: on*
-
+####  *ignoreComments: on* 
+    --------------------------------------------------------------------------------
     :     matching files: 12748 / 12750 from 2072 / 2148 directories
-    :     found 133443 match
-    :     parsed lines: 1 471 296 matching: 133443 / 2366950 empty: 362 665  comments: 532 989 (ignored)
+    :     found 133222 match
+    :     parsed lines: 1 471 296 matching: 133222 / 2366950 empty: 362 665  comments: 532 989 (ignored)
     -------------------------- Time elapsed :  5s 145ms  ---------------------------
 
+## what's next 
 
-## what' next 
+Set a *probe.yaml* to match your project files.    
+Use *search* to quickly query your source code with differents regex.            
+    
 
-Adapt a *probe.yaml* to match your project files.
-Use *search* to quickly query your source code with differents regex. 
-Have a look at [mastering regex](./regexHelp.md)  
-Uses and study ***searchInJava.mjs*** in *samples* that combines several search. 
+--- 
 
-
+  [probe parameters](probe.md)   
+  [programming aspects](programming.md)     
+  [master regex](regexHelp.md)     
 

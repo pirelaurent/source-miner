@@ -124,11 +124,14 @@ export function flattenProbe() {
   // detailed report
   this.detailedReport = (this.probeRun.detailedReport ?? "off") === "on";
 
-  this.showExtraLinesBeforeMatch =
-    this.probeRun?.showLinesBefore ?? 0;
+  this.probeRun.showLinesBefore ??= 0;
 
+  this.showExtraLinesBeforeMatch =
+    this.probeRun.showLinesBefore;
+
+  this.probeRun.showLinesAfter ??= 0;
   this.showExtraLinesAfterMatch =
-    this.probeRun?.showLinesAfter ?? 0;
+    this.probeRun?.showLinesAfter;
 
   // adjust regex and notice mode per line or multilines 
 
@@ -138,7 +141,7 @@ export function flattenProbe() {
   this.traceMatchingLines =
     (this.probeRun.traceMatchingLines ?? "off") === "on";
 
-  this.fullPathFromOs = (this.probeRun.fullPathFromOs?? "off") == "on";
+  this.fullPathFromOs = (this.probeRun.fullPathFromOs ?? "off") == "on";
 
   this.separator = (this.probeRun.separator ?? "\t");
   // standard outpu options 
@@ -155,11 +158,11 @@ export function flattenProbe() {
   this.probeRun.rank_key =
     (v === true || v === "on") ? "on" : "off";
 
-// internal option. 
+  // internal option. 
 
-const m = this.probeRun.execution?.mode ?? "sequential";
-this.probeRun.execution ??= {};
-this.probeRun.execution.mode = (m === "parallel" || m === "sequential") ? m : "sequential";
+  const m = this.probeRun.execution?.mode ?? "sequential";
+  this.probeRun.execution ??= {};
+  this.probeRun.execution.mode = (m === "parallel" || m === "sequential") ? m : "sequential";
 
 }
 
@@ -211,7 +214,7 @@ export function displayProbe() {
     probe.showLinesAfter != 0
   )
     console.log(
-      " showExtraLines : before:" +
+      ": showExtraLines : before:" +
       probe.showLinesBefore +
       " after:" +
       probe.showLinesAfter

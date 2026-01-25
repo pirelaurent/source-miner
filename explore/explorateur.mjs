@@ -85,8 +85,8 @@ class Explorateur {
   async processDirectory(directoryPath, depth = 0) {
     return processDirectoryImpl.call(this, directoryPath, depth);
   }
-   skipDirectory(currentPath) {
-    return skipDirectoryImpl.call(this,currentPath);
+  skipDirectory(currentPath) {
+    return skipDirectoryImpl.call(this, currentPath);
   }
   /* ------------------------ EVENT : methods with no code for overwriting ------------------------ */
 
@@ -146,8 +146,8 @@ class Explorateur {
     return processFileImpl.call(this, filePath);
   }
 
-  skipFile(filePath){
-    return skipFileImpl.call(this,filePath);
+  skipFile(filePath) {
+    return skipFileImpl.call(this, filePath);
   }
 
   /* ------------------------ UTILS ------------------------ */
@@ -169,7 +169,8 @@ class Explorateur {
       main loop on the roots 
     */
     for (let root of this.fullRoots) {
-      console.log(alignTitle("start exploration of :" + this.shortPath(root), 80, 10));
+      if (this.detailedReport)
+        console.log(alignTitle("start exploration of :" + this.shortPath(root), 80, 10));
       const collectOfRoot = await this.processDirectory(root);
       if (this.detailedReport) {
         this.endOfARootPathExploration(root, collectOfRoot);
@@ -188,6 +189,7 @@ class Explorateur {
   async runParallel() {
     const results = await Promise.all(
       this.fullRoots.map(async (root) => {
+
         console.log(
           alignTitle(
             "start exploration of :" + this.shortPath(root),
@@ -195,6 +197,8 @@ class Explorateur {
             10
           )
         );
+
+
 
         const collectOfRoot = await this.processDirectory(root);
 

@@ -2,22 +2,23 @@
 
 Regex are powerful tools for matching patterns in strings.   
 
-## my best advice : ask an AI to give regex patterns  
+## best advice : ask an AI   
  
- As an example, i ask one to get a  regex to catch instanciations *new someClass* from java sources : 
- I precise 'In js code' (as escaping \ of regex as \\ is significant in js) 
- ( Think aboout to precise your usage to AI : for javascript, for yaml, for shell. )
+
+ I ask an AI to get a regex for catching instanciations *new someClass* from java sources :     
+ I precise 'for js code' (as escaping \ of regex as \\ is significant in js)     
+ ( Think aboout to precise your usage to AI : for javascript, for yaml, for shell. ).   
  
       regex.pattern =
       '\\bnew\\s+([A-Za-z_]\\w*(?:\\.[A-Za-z_]\\w*)*)(?:\\s*<[^>]+>)?\\s*(?:\\(|\\[)';
       regex.flags = 'g';
 
- Directly in command line : 
+ The same for command line : 
 
       node search.mjs ./probes/autoProbe '/\bnew\s+([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)(?:\s*<[^>]+>)?\s*(?:\(|\[)/g'
 
 
-While constructing such a regex manually is headache, an AI can not only generate it but also explain its structure and behavior.
+While constructing such a regex manually is headache, an AI can not only generate it but also explain its structure and behavior.   
 
 => ask AI
 
@@ -66,22 +67,26 @@ Some basic regex concepts you may want to know can be helpful.
    - To match special characters like `.` or `*`, escape them with a backslash (`\`). For example, `\.` matches a literal dot.
 
 9. **Lookahead and Lookbehind**:
-   - `(?=...)` is a positive lookahead assertion. It ensures that what follows the current position in the string matches the pattern inside the lookahead.
-   - `(?!...)` is a negative lookahead assertion. It ensures that what follows the current position does not match the pattern inside the lookahead.
-   - `(?<=...)` is a positive lookbehind assertion. It ensures that what precedes the current position in the string matches the pattern inside the lookbehind.
-   - `(?<!...)` is a negative lookbehind assertion. It ensures that what precedes the current position does not match the pattern inside the lookbehind.
+   - `(?=...)` is a positive lookahead assertion. 
+     - It ensures that what follows the current position in the string matches the pattern inside the lookahead.
+   - `(?!...)` is a negative lookahead assertion. 
+     - It ensures that what follows the current position does not match the pattern inside the lookahead.
+   - `(?<=...)` is a positive lookbehind assertion. 
+     - It ensures that what precedes the current position in the string matches the pattern inside the lookbehind.
+   - `(?<!...)` is a negative lookbehind assertion. 
+     - It ensures that what precedes the current position does not match the pattern inside the lookbehind.
 
+---   
 
+### Regex differences between Command Line, YAML, JavaScript
 
-## Regex usage: YAML, JavaScript, and Command Line
-
-The tool accepts regular expressions from three contexts.
-Each context has different escaping rules.
+The tool accepts regular expressions from three contexts.   
+Each context has different escaping rules.    
 
 ### 1) Command line (CLI)
-	•	Regex arguments are shell strings.
-	•	Always quote them.
-	•	On macOS / Linux / WSL, prefer single quotes.
+	•	Regex arguments are shell strings.   
+	•	Always quote them.   
+	•	On macOS / Linux / WSL, prefer single quotes.   
 
 Use
 ```shell 
@@ -141,3 +146,4 @@ probe.regex = {
 	•	Passing JavaScript object literals on the command line
 
 ⸻
+

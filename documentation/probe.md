@@ -2,9 +2,9 @@
 
 ##  *modelProbe.yaml* 
 
-This file in */probes* directory reflects all the default values for scan parameters.
-It provides a reference baseline for creating your custom project's probe.
-In your probes, if some parameters are missing, defaults are applied. 
+This file in */probes* directory reflects all the default values for scan parameters.   
+It provides a reference baseline for creating your custom project's probe.   
+In your probes, if some parameters are missing, defaults are applied.     
 
 ### Starting directories 
 
@@ -50,17 +50,19 @@ Behavior and rationale
   -	to parse exclusively a few files , set their names in *notIncludes* to reject all others
 
 Why full paths are used in filters (especially for files)
-- File names alone are not sufficient: the same file name may legitimately exist in multiple directories.
-Using the full path avoids ambiguities and allows precise filtering.
+- File names alone are not sufficient: 
+    The same file name may legitimately exist in multiple directories.
+    Using the full path avoids ambiguities and allows precise filtering.
 - As a consequence, patterns in *includes / notIncludes* may also match directory names appearing in the path.
-Filters should therefore be written carefully to avoid unintended matches.
+    Filters should therefore be written carefully to avoid unintended matches.
 
 #### sample   
-
-    skipDirIfName:
-      includes: ['sales.*/perf','/V2/generated','jaxb' ]
-    skipFileIfName:
-      includes: ['test' ]
+```yaml 
+skipDirIfName:
+  includes: ['sales.*/perf','/V2/generated','jaxb' ]
+skipFileIfName:
+  includes: ['test' ]
+``` 
 
 ### file extension 
 
@@ -113,17 +115,17 @@ By default the search goes full text code and comments :
 ``` yaml
 ignoreComments: off
 ```
-If ***ignoreComments: on***, a first pass separates *code* and *comments*.
-The search is then applied only to code.
+If ***ignoreComments: on***, a first pass separates *code* and *comments*.   
+The search is then applied only to code.   
 
-The app has profiles to exclude comments on demand for the following extensions: 
+The app has profiles to exclude comments on demand for the following extensions:    
 ```yaml
 ['c','h','cpp','hpp','rust','go','java','kt','js','mjs','ts','cs','sql','yaml','yml','sh','bash','zsh','md']
 ```  
  Any line containing a comment (partial or full) will be counted in report value as a line with *comments: xx (ignored)*.
 
->Filtering comments is approximately 5× more expensive than a plain search.
->With a plain search, empty lines and comment lines are not counted.
+>Filtering comments is approximately 5× more expensive than a plain search.   
+>With a plain search, empty lines and comment lines are not counted.   
 
 ### Output on the fly
 
@@ -139,7 +141,7 @@ showLinesAfter : 0
   - Surrounding lines *before* or/and *after* can also be traced to give more context. 
     - if any: matching lins have a star, surrounding have not 
 
-Sample extract below with 1 line before and 1 line after (regex *'/file/i'*): 
+Sample extract below with 1 line before and 1 line after (regex *'/file/i'*):    
 
 
     --------------- File: /explore/collector.mjs --------------
@@ -155,9 +157,9 @@ Sample extract below with 1 line before and 1 line after (regex *'/file/i'*):
 ```yaml 
 detailedReport: off
 ```
-Similar reports are produced 
-	•	after each individual rootToExplore when *detailedReports* is enabled;
-	•	after the complete scan in all cases.
+Similar reports are produced   
+	•	after each individual rootToExplore when *detailedReports* is enabled;   
+	•	after the complete scan in all cases.   
 
 Sample of final report: 
   
@@ -172,19 +174,19 @@ Sample of final report:
 
 #### Internal collect results
 
-The internal raw results is a dictionary. (key : array of [array per match]) 
-***match : [ [path | line Number | sourceLine], [path | line Number | sourceLine], ...]***
-The number of occurences of a match is the size of its associated array.
+The internal raw results is a dictionary. (key : array of [array per match]).   
+***match : [ [path | line Number | sourceLine], [path | line Number | sourceLine], ...]***.  
+The number of occurences of a match is the size of its associated array.   
 
 #### Output as tables 
 
-To separate values, the separator is defined in probe and can be changed.  
+To separate values, the separator is defined in probe and can be changed.     
 
     separator: '|' 
 
 ### Available standard reports 
 
-Three levels of tables output can be set through probe: 
+Three levels of tables output can be set through probe:    
 
 ```yaml 
 rank_key_path_line: on
@@ -192,11 +194,11 @@ rank_key_path: on
 rank_key: on
 ```
 
-- rank : number of identical data matching : 
-  - key : the matches detected by regex
-    - path : the path of the file where match occurs 
-      - line : text of the line where match is found
-- the 3 options give 3 differents arrays. 
+- rank : number of identical data matching :   
+  - key : the matches detected by regex.  
+    - path : the path of the file where match occurs    
+      - line : text of the line where match is found.  
+- the 3 options give 3 differents arrays.    
 
 ---  
 ## Samples of results 
@@ -241,7 +243,7 @@ rank_key: on
 
 ### get results by program   
 
-Starting from the search.mjs program, you can adapt it and use the aggregated results for any further processing you need.
+Starting from the search.mjs program, you can adapt it and use the aggregated results for any further processing you need.   
 
     let probe = getProbeFromCommandLine();
     let explore = new Explorateur(probe);
@@ -251,21 +253,23 @@ Starting from the search.mjs program, you can adapt it and use the aggregated re
 
 
 ---   
-See [ programming aspects](./documentation/programming.md) :
 
-- Create a new app 
-	•	configure probe parameters programmatically
-	•	run multiple explorations sequentially or in parallel
-	•	store results in different formats: files, database
-	•	build higher-level workflows on top of the core exploration engine.
-  •	overwrite any method of Explorateur in your own new Class
+#### Development over explorateur.mjs :
+
+- Create new apps.      
+	•	configure probe parameters programmatically.  
+	•	run multiple explorations sequentially or in parallel.  
+	•	store results in different formats: files, database.  
+	•	build higher-level workflows on top of the core exploration engine.   
+  •	overwrite any method of Explorateur in your own new Class.  
 
 
 ---  
 ## How to 
 
   [install](Install.md)    
-  [master regex](regexHelp.md)  
+  [programming aspects](programming.md)   
+  [master regex](regexHelp.md)    
 
   
 

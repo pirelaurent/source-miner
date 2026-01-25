@@ -84,7 +84,7 @@ rank_key_path_line: off
 > - are available in a collection at the end of run.  
 ---   
 # source-miner 
-  [install](./documentation/Install.md)    
-  [probe parameters](./documentation/probe.md)
-  [programming aspects](./documentation/programming.md)
-  [master regex](./documentation/regexHelp.md)  
+  [install](./documentation/Install.md)     
+  [probe parameters](./documentation/probe.md)   
+  [programming aspects](./documentation/programming.md)     
+  [master regex](./documentation/regexHelp.md)     

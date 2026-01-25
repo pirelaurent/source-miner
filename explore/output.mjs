@@ -44,9 +44,9 @@ export function endOfARootPathExploration(root, collect) {
 
   // last call is global with an array
   if (typeof root != "string") {
-    console.log(alignTitle(`end of exploration of group [${root}]`, 80, 10));
+    console.log(':'+alignTitle(`end of exploration of group [${root}]`, 79, 5));
   } else {
-    console.log(alignTitle(`end of exploration of  [${this.shortPath(root)}]`, 80, 10));
+    console.log(':'+alignTitle(`end of exploration of  [${this.shortPath(root)}]`,79, 5));
   }
   console.log(
     `:     matching files: ${rfiles} / ${afiles} from ${rDirs} / ${aDirs} directories`

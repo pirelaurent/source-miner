@@ -1,0 +1,52 @@
+# this modelProbe.yaml shows all default values if not set in your own probe.yaml
+
+commonOrigin: './'
+rootsToExplore: []
+
+
+skipDirIfName:
+  includes: []
+  notIncludes:  [] 
+
+skipFileIfName:
+  includes: []
+  notIncludes: []
+  
+keepExtension:
+  includes: 
+    - '.java'
+    - '.js'
+    - '.yaml'
+
+# display path from the os root 
+fullPathFromOs: off 
+# optional debug on the flow 
+traceSelectedDir: off  
+traceRejectedDir: off
+traceSelectedFile: off
+traceRejectedFile: off
+
+regex:
+  pattern: '/where is Charlie/'
+  flags: 'g'
+
+ignoreComments: off
+
+traceMatchingLines: off
+showLinesBefore: 0
+showLinesAfter : 0
+
+# intermediate report for each rootToExplore
+detailedReport: off
+
+# --- add to reports : results array 
+separator: ' | ' # ¤ \t , ; 
+
+rank_key_path_line: on
+rank_key_path: on
+rank_key: on
+
+# --- run options 
+execution: 
+  mode: sequential
+  #mode: parallel 

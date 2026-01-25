@@ -218,8 +218,6 @@ Value structure : array of matches
 
 If a same key is found several times on the same line, each match will have its entry. 
 
-
-
 ---
 
 ## Reports
@@ -232,16 +230,18 @@ See standard reports in chapter Probe :
     rank_key_path: on
     rank_key: on
 
-### Developing new reports 
+---   
 
-### Sample into *samples/searchInJava.mjs*
+## Develop new search and new reports 
 
-This example was running three successive regex searches on a Java project to match:
+### Example to look at : *samples/searchInJava.mjs*
+
+This code runs three successive regex searches on a Java project to match:
 - `new` 
 - `import|package` in one round 
 - `class|Interface|enum|record` in one round
 
-Resulting in three lists :
+Results are collected in three lists :
 
     new|classInstantiatedName
 
@@ -253,7 +253,7 @@ Resulting in three lists :
     enum|enumName
     record|recordName
 
-#### ranking and output 
+#### ranking and output top 10
 
   The rank is the number of match per key (array size of [ [ fullPath, lineNumber, lineText ],... ]
   The sample code sort by rank and output the top 10 
@@ -290,4 +290,10 @@ No mystery, just js code.
 Some methods are asynchronous, but a deliberate design choice was made:
 
 > Directory traversal is intentionally **sequential and deterministic**.  
-> Files and subdirectories are processed one at a time to keep ordering, reporting, and resource usage predictable.
+> Files and subdirectories are processed one at a time to keep ordering, reporting, and resource usage predictable.   
+
+---  
+
+  [Installation](Install.md)  
+  [probe parameters](probe.md)      
+  [master regex](regexHelp.md) 

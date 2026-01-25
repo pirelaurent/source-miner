@@ -61,6 +61,7 @@ class TestExplorateur extends Explorateur {
 
 // check for a valid probe to share main parameters  
 let probeFileName = "./testProbe.yaml";
+
 const resolvedProbeFile = path.resolve(probeFileName);
 if (!fs.existsSync(resolvedProbeFile)) {
     console.error(`Uses ${probeFileName} unreachable.  Please run the test from the root of the project where test/testProbe.yaml is located.`);
