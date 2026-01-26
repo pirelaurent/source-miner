@@ -2,7 +2,7 @@
 
 ## **Explorateur.mjs** 
 
-This is the main class responsible for performing the search and collecting results.
+The main class responsible for performing the search and collecting results.
 
 ####  `.mjs` choice
 
@@ -16,11 +16,10 @@ Using the `.mjs` extension:
 
 ### Externalized implementations
 
-Explorateur delegates some methods to external functions
-(e.g. in `processDirectory.mjs`) using `.call(this)`.
+Explorateur delegates some methods to external functions like the following (mind ***call(this***,...))
 
     import { processDirectory as processDirectoryImpl } from "./processDirectory.mjs";
-    async processDirectory(directoryPath) {  return processDirectoryImpl.call(this, directoryPath) }   
+    async processDirectory(directoryPath) { return processDirectoryImpl.call(this, directoryPath) }   
 
 This preserves:
 - access to instance state
@@ -45,26 +44,27 @@ This preserves:
     let explore = new Explorateur(probe);
     await explore.run();
 
-To load a probe programmatically, outside of the command line:
+To load a probe programmatically, outside command line:
 
     let probe = readFromFile("myProbe.yaml")
     
 
 ### Changing probe parameters by code
 
-To understand probe configuration, see [Quick reference guide](../README.md#quick-reference-guide)
+To understand probe configuration, see [probe reference guide](../README.md#probe-reference-guide)
 
-Any YAML entry can be set programmatically, provided the structure is respected:
+Any missing entry takes default values as shown by *modelProbe.yaml*
+Any YAML entry can be set programmatically, provided the yaml structure is respected:
 
 Examples: 
 
     // restrict search to Java files only
     probe.keepExtension.includes = [".java"];
 
-    // search everywhere except in comments
-    probe.ignoreComments = "on";
+    // search only in code, not in comments
+    search.comments = "off"
 
-    // case-insensitive search (other flags gm are implicit)
+    // case-insensitive search ( flags gm are implicit if not set)
     probe.regex = "/file/i";
 
     // trace selected lines on the fly  
@@ -79,14 +79,13 @@ If you want to replace the probe in an existing instance:
 
 ## Designing your classes
 
-A way to adapt behavior to your needs is to inherit from `Explorateur` and add or overwrite methods.
+A way to adapt behavior to your needs is to create you class, inherit from `Explorateur` and add or overwrite methods.
 
     class PlusExplorateur extends Explorateur {
       constructor(probe) {
         super(probe);
       }
     }
-
 
 ---
 
@@ -104,7 +103,7 @@ See the source: `explore/explorateur.mjs`
 
 Any method can be overridden replacing or reusing parent method via `super`.
 
-Sample : trace and skip a special directories before standard skip 
+Sample : trace and skip a special directories overwritting *skipDirectory* method: 
 
     /*
     Contract
@@ -124,23 +123,27 @@ Sample : trace and skip a special directories before standard skip
 
 ### Overriding event methods
 
-Example: Detect out of norms files, candidates to be refactored
+An event method has no code inside main explorateur, just an empty implementation you can replace.  
+
+Example 1: Detect out of norms files, candidates to be refactored
 
     endOfProcessingFileEvent(collect) {
       const nb = collect.count_all_lines;
-      if (nb > 3000) {
+      const max = 3000;
+      if (nb > max) {
         console.log(
-          `*** WARNING: Large file (${nb} lines): ${collect.displayPath}`
+          `⚠️  WARNING: File size out of bound ${max} (${nb} lines): ${collect.displayPath}`
         );
       }
     }
 
-Example: Detect overcrowed directories candidate to be split
+Example 2: Detect overcrowed final directories candidates to reorganization
 
     endOfProcessingDirEvent(collect) {
       const nb = collect.count_all_visited_files;
-      if (!collect.has_sub_dir && nb > 300) {
-        console.log(`FAT DIR: ${nb} files in ${collect.displayPath}`);
+      const max = 300;
+      if (!collect.has_sub_dir && nb > max) {
+        console.log(`FAT DIR : ${nb} files >${max} in ${collect.displayPath}`);
       }
     }
 
@@ -160,10 +163,10 @@ See source code ***collector.mjs*** for detailed content.
 
 ### Recursion tree and collect(s) consolidation
 
-•	 Each scanned file produces its own new `Collect`
-•	 Each directory merges the collects of its children, files and subDirs
-•	 Results propagate upward through the recursion
-•	 At the end of a root traversal, the method `endOfARootPathExploration` is called and can be hooked
+•	 Each scanned file produces its own new `Collect`.  
+•	 Each directory merges the collects of its children, files and subDirs.  
+•	 Results propagate through the recursion.  
+•	 At the end of a root traversal, the method `endOfARootPathExploration` is called and can be hooked.   
 
       export function endOfARootPathExploration(root, collect) {
       // default summary output code is here
@@ -295,5 +298,5 @@ Some methods are asynchronous, but a deliberate design choice was made:
 ---  
 
   [Installation](Install.md)  
-  [probe parameters](probe.md)      
+  [probe references guide](probe.md)      
   [master regex](regexHelp.md) 

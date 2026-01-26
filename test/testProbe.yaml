@@ -26,7 +26,10 @@ regex: # will be replaced later by code according to each test case
   pattern: '/where is Charlie/'
   flags: 'g' 
 
-ignoreComments: on 
+search:
+  code: on     # search in code 
+  comments: on # search in comment
+
 
 traceMatchingLines: off
 showLinesBefore: 0

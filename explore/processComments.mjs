@@ -13,10 +13,6 @@
  - number of lines with comment, partial or full 
  2- to apply the regex search including or not including the comments 
 
-With results : 
-
--  searchInCommentLines === true : search in  original . 
--  searchInCommentLines === false :  search in code. 
 */
 
 
@@ -104,9 +100,12 @@ export const LANGUAGE_BY_DOT_EXTENSION = Object.fromEntries(
 
 */
 
-export function splitCodeAndComments(lines,collect) {
-// delimiters
-let profile = LANGUAGE_BY_DOT_EXTENSION[collect.extension];
+export function splitCodeAndComments(data, collect) {
+
+    const lines = data.split(/\r?\n/);
+
+    // delimiters
+    let profile = LANGUAGE_BY_DOT_EXTENSION[collect.extension];
     if (!profile) {
         warn(`No comment profile for extension ${collect.extension} . All lines considered as code.`);
         // default empty profile
@@ -230,4 +229,24 @@ let profile = LANGUAGE_BY_DOT_EXTENSION[collect.extension];
     }
 
     return results;
+}
+
+
+/*
+    reconstiture either code part either comments part 
+*/
+export function isolateSearchedData(results,  codePart, collect) {
+    const parts = [];
+    // recreate pure code data
+    for (let k = 0; k < results.length; k++) {
+        if (k > 0) parts.push('\n');
+        let res = results[k];
+        let code = codePart ? res.code : res.comment;
+        parts.push(code);
+        let tcode = code.trim().length;
+        let tcomment = res.comment.length;
+        if (tcomment > 0) collect.count_comment_lines++;
+        if (tcode + tcomment == 0) collect.count_empty_lines += 1;
+    }
+    return parts.join('');
 }

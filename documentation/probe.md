@@ -1,10 +1,10 @@
-# Probe - quick reference guide 
+# Probe reference guide 
 
 ##  *modelProbe.yaml* 
 
 This file in */probes* directory reflects all the default values for scan parameters.   
 It provides a reference baseline for creating your custom project's probe.   
-In your probes, if some parameters are missing, defaults are applied.     
+In your probes, if some parameters are missing, it shows which defaults are applied.     
 
 ### Starting directories 
 
@@ -14,15 +14,19 @@ rootsToExplore: [ ]
 fullPathFromOs: off 
 ```    
 - *commonOrigin*: './'
-    - Uses the current working directory as the base path. Any relative entry in *rootsToExplore* is resolved from there.
-    - starting with `~` or `~/` or `~/somePath`: ~/ is replaced by HOMEDIR for mac, linux and windows.
-    - for independant modules or projects, set *commonOrigin* at the higher common point of view and set their relative path in *rootsToExplore*.
+    - Defines the base directory for the scan.
+    - Any relative entry in rootsToExplore is resolved from this path/
+    - Paths starting with ~, ~/, or ~/somePath are resolved to the user home directory (HOMEDIR) on macOS, Linux, and Windows.
+    - For independent modules or projects, set commonOrigin to their highest common level, and list each module’s relative path in rootsToExplore.
 -	*rootsToExplore*: []
-    - no roots defined : the tool will scan all and only all dir(s) under *commonOrigin*.
-    - Can hold distincts directories path to scan relative to *commonOrigin*. 
+    - Empty: scans all subdirectories under commonOrigin.
+    - Non-empty: scans only the listed directories, each expressed as a path relative to commonOrigin. 
+
+Relative or exact path names in output:      
+
 - *fullPathFromOs*: off
-    - Paths are displayed relatively to *commonOriginOfRoot*.  
-    - if set *on*  : display use the full path of file from origin. (Useful to start an editor from anywhere) 
+    - Paths are displayed relative to *commonOrigin*.  
+    - When set to on, paths are displayed as full absolute paths from the OS root (useful for opening files directly in an editor from any location).
 
 #### sample   
 
@@ -107,25 +111,35 @@ regex: '/where is Charlie/gm'
 	- i (ignoreCase): case-insensitive matching.
 	- m (multiline): can find a regex crossing lines
 
- **gm flags** will be automatically enforced by *source-miner*
+ **gm** flags will be automatically enforced by *source-miner*.
 
-### Option to avoid matches in comments 
+#### search options   
 
-By default the search goes full text code and comments : 
 ``` yaml
-ignoreComments: off
-```
-If ***ignoreComments: on***, a first pass separates *code* and *comments*.   
-The search is then applied only to code.   
+search:
+  code: on     # search in code 
+  comments: on # search in comment
+```  
+By default the search goes full text.  
 
-The app has profiles to exclude comments on demand for the following extensions:    
+- with comments **off**, source code is parsed in order to:    
+  - remove comment lines, according to the file extension    
+  - remove inline comment parts from lines that also contain code    
+  - count each line affected by a comment in *comment_lines* counter. 
+  - return comment-free code to the search engine     
+
+This option is useful when comments introduce noise in search results.  
+In some case, if you want to search only in comments: *set code: off and leave comments:on *
+
+### languages'profiles 
+
+Source-miner has profiles to exclude comments on demand for the following extensions:    
 ```yaml
 ['c','h','cpp','hpp','rust','go','java','kt','js','mjs','ts','cs','sql','yaml','yml','sh','bash','zsh','md']
 ```  
- Any line containing a comment (partial or full) will be counted in report value as a line with *comments: xx (ignored)*.
 
 >Filtering comments is approximately 5× more expensive than a plain search.   
->With a plain search, empty lines and comment lines are not counted.   
+>With a plain search, comment lines are not counted.   
 
 ### Output on the fly
 

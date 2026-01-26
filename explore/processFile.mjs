@@ -9,8 +9,8 @@ import { Collect } from "./collector.mjs";
 import { readLinesOneShot } from "./readers.mjs";
 import { DictArray } from "./util/dictArray.mjs";
 import { regIncludes, regNotIncludes } from "./util/setRegexp4js.mjs";
-import { computeLineStarts, lineNumberFromIndex, lineTextFromLineNumber } from "./util/variousUtil.mjs"
-import { splitCodeAndComments } from "../explore/processComments.mjs";
+import { computeLineStarts, computeLineStartsAndEmptyCount, lineNumberFromIndex, lineTextFromLineNumber } from "./util/variousUtil.mjs"
+import { isolateSearchedData,splitCodeAndComments } from "../explore/processComments.mjs";
 
 
 
@@ -28,7 +28,7 @@ export async function processFile(filePath) {
 
   // bag of parameters and results 
   let collect = new Collect("processFile");
-  // add file info 
+  // add file level info 
   collect.regex = this.regex;
   collect.fullPath = filePath;
   collect.shortPath = this.shortPath(filePath);
@@ -49,29 +49,28 @@ export async function processFile(filePath) {
    then recreate a pur code data 
    */
 
-  if (this.ignoreComments) {
-    const lines = data.split(/\r?\n/);
-    let results = splitCodeAndComments(lines, collect);
-    const parts = [];
-    for (let k = 0; k < results.length; k++) {
-      if (k > 0) parts.push('\n');
-      let res = results[k];
-      parts.push(res.code);
-      let tcode = res.code.trim().length;
-      let tcomment = res.comment.length;
-      if (tcomment > 0) collect.count_comment_lines++;
-      if (tcode + tcomment == 0) collect.count_empty_lines += 1;
-    }
-    data = parts.join('');
+
+  // if search everywhere, don't split . Otherwise, split and choose
+  if (!this.searchInCode || !this.searchInComments) {
+    const results = splitCodeAndComments(data,collect);
+    data = isolateSearchedData (results,this.searchInCode,collect) // otherwise comments
   }
+
+
 
   const showLineIdx = new Set(); // lignes à afficher (match + contexte)
   const matchIdx = new Set(); // lignes qui matchent
 
 
   // note positions of line feed to separate by line in results 
-  let lineStarts = computeLineStarts(data);
+  //let lineStarts = computeLineStarts(data);
+
+
+  const { lineStarts, emptyLines } = computeLineStartsAndEmptyCount(data)
   collect.count_all_lines = lineStarts.length;
+ // empty lines of data code or comments or both
+  collect.count_empty_lines = emptyLines;
+
 
   //--------------- real processing of regex ----------------
   const before = this.showExtraLinesBeforeMatch;

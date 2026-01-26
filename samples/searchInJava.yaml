@@ -58,9 +58,11 @@ traceRejectedFile: off
 regex:
   pattern: '/where is Charlie/'
   flags: 'g' # g - global=all occurences, i — ignore case,  m - multiLignes
-  #----------------  on command line '/where is Charlie/g' -----------
+#----------------  on command line '/where is Charlie/g' -----------
 
-ignoreComments: off
+search:
+  code: on     # search in code 
+  comments: on # search in comment
 
 # ----- trace on the fly or not
 traceMatchingLines: off

@@ -12,7 +12,9 @@ keepExtension:
     - '.mjs'
     - '.yaml'
 
-ignoreComments: on
+search:
+  code: on     # search in code 
+  comments: on # search in comment
     
 regex: 
   pattern: '/file/'

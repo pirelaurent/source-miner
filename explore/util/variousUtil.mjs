@@ -81,7 +81,33 @@ export function computeLineStarts(text) {
   return starts;
 }
 
+/*
+ note starts of lines and count empty lines 
+*/
+export function computeLineStartsAndEmptyCount(text) {
+  const lineStarts = [0];
+  let emptyLines = 0;
+  let hasNonWs = false;
 
+  for (let i = 0; i < text.length; i++) {
+    const c = text.charCodeAt(i);
+
+    if (c === 10) { // '\n'
+      if (!hasNonWs) emptyLines++;
+      lineStarts.push(i + 1);
+      hasNonWs = false;
+      continue;
+    }
+
+    if (c !== 32 && c !== 9 && c !== 13) hasNonWs = true;
+  }
+
+  if (text.length > 0 && text.charCodeAt(text.length - 1) !== 10) {
+    if (!hasNonWs) emptyLines++;
+  }
+
+  return { lineStarts, emptyLines };
+}
 
 /*
  dichotomie : returns the line number taht include char at index 

@@ -119,7 +119,20 @@ export function flattenProbe() {
 
   // filter comment
 
-  this.ignoreComments = (this.probeRun.ignoreComments ?? "off") === "on";
+  // by default search everywhere 
+  // previous ignoreComment is : this.searchInCode && !this.searchInComments
+
+  this.probeRun.search ??= {};
+  this.searchInCode = (this.probeRun.search.code?? "on")=== "on";
+  this.searchInComments = (this.probeRun.search.comments?? "on")=== "on";
+
+  // case both to off 
+  if(!this.searchInCode && ! this.searchInComments){
+    console.log('❌  ERROR : Nothing to search: search.code and search.comments are off');
+    console.log('. Program exit');
+    process.exit(1);
+  }
+
 
   // detailed report
   this.detailedReport = (this.probeRun.detailedReport ?? "off") === "on";
@@ -177,9 +190,9 @@ export function displayProbe() {
   console.log(`: roots: [${probe.commonOrigin}] x [${probe.rootsToExplore}]`);
   let filter = '-per line';
   let comment = '';
-  if (!this.ignoreComments) { filter = "(comments ignored)" } else {
-    comment = this.ignoreComments ? '-comment skipped"' : "";
-  }
+  if(this.searchInCode && this.searchInComments) filter = '(plain source)';
+   if(this.searchInCode && !this.searchInComments) filter = '(code only)';
+      if(!this.searchInCode && this.searchInComments) filter = '(comments only)';
 
   console.log(`: regex: '${this.regex}'  ${filter}  ${comment} `);
 

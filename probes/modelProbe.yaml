@@ -20,6 +20,7 @@ keepExtension:
 
 # display path from the os root 
 fullPathFromOs: off 
+
 # optional debug on the flow 
 traceSelectedDir: off  
 traceRejectedDir: off
@@ -30,7 +31,10 @@ regex:
   pattern: '/where is Charlie/'
   flags: 'g'
 
-ignoreComments: off
+search:
+  code: on     # search in code 
+  comments: on # search in comment
+
 
 traceMatchingLines: off
 showLinesBefore: 0

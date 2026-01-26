@@ -15,7 +15,7 @@ Regex are powerful tools for matching patterns in strings.
 
  The same for command line : 
 
-      node search.mjs ./probes/autoProbe '/\bnew\s+([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)(?:\s*<[^>]+>)?\s*(?:\(|\[)/g'
+      node search.mjs probe.yaml '/\bnew\s+([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)(?:\s*<[^>]+>)?\s*(?:\(|\[)/g'
 
 
 While constructing such a regex manually is headache, an AI can not only generate it but also explain its structure and behavior.   

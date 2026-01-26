@@ -72,22 +72,30 @@ let probe = readProbeFromFile(probeFileName);
 let title = "";
 
 //------------------------------//------------------------------//------------------------------
-title = ('\n------------ 1- tests for search of keywords:  comments not ignored ----------');
+title = ('\n------------ 1- tests for search of keywords plain source ----------');
 // reduce to java
 probe.keepExtension.includes = [".java"];
 // restrict to this very named file 
 probe.skipFileIfName.notIncludes = ['JavaCommentAllCases'];
-// search the word comment everywhere including in comments // / * * / etc.
-probe.ignoreComments = 'off';
+
+
 // case sensitive (g is implicit to search several matches per line )
 probe.regex = '/comment/';
+// search the word comment everywhere : plain source 
+probe.search.code='on';
+probe.search.comments ='on';
+
+
 //probe.traceMatchingLines = "on"
 await new TestExplorateur(title, probe, 31, 33, "count all lines <> all matches case sensitive").run()
 
 
 // case insensitive
-title = ('\n------------ 2- tests for search of keywords:  comments not ignored , ignoring case ----------');
-probe.ignoreComments = 'off';
+title = ('\n------------ 2- tests for search of keywords:  ignoring case plain source----------');
+// we reuse the same search plain source
+probe.search.code='on';
+probe.search.comments ='on';
+
 probe.regex = '/comment/i';
 //probe.traceMatchingLines = "on"
 await new TestExplorateur(title, probe, 35, 37, "count all lines <> all matches case sensitive").run();
@@ -96,31 +104,48 @@ await new TestExplorateur(title, probe, 35, 37, "count all lines <> all matches 
 
 title = ('\n------------ 3-tests for search of keywords: ignoring comments , ignoring case----------');
 probe.skipFileIfName.notIncludes = ['JavaCommentAllCases'];
-probe.ignoreComments = 'on';
+// don't search in comments 
+probe.search.code='on';
+probe.search.comments ='off';
+
 probe.regex = '/comment/i';
 //probe.traceMatchingLines = "on"
 await new TestExplorateur(title, probe, 9, 9, "count all lines <> all matches case sensitive", false).run();
 
 //------------------------------ SQL comment
 
-title = ('\n------------ 4-Starting tests for search including comments or not in SQL files ----------');
+title = ('\n------------ 4-Starting tests for search plain source SQL files ----------');
 
 probe.keepExtension.includes = [".sql"];
 probe.skipFileIfName.notIncludes = ['SQLCommentAllCases.sql'];
-probe.ignoreComments = 'off';
+probe.search.code='on';
+probe.search.comments ='on';
+
 probe.regex = '/SELECT/';
 //probe.traceMatchingLines = "on"
 // 48 SELECT dans le source  5 lignes avec 2 SELECT -> 43 lignes 
-await new TestExplorateur(title, probe, 43, 48, " count words SELECT including in comments", false).run();
+await new TestExplorateur(title, probe, 43, 48, " count words SELECT plain source ", false).run();
 
 
-title = ('\n------------ 5-Starting tests for search  in SQL files ');
+title = ('\n------------ 5-Starting tests for search out of SQL comments in SQL files ');
 //----- must have only real SELECT if sql dialect
 probe.keepExtension.includes = [".sql"];
 probe.skipFileIfName.notIncludes = ['SQLCommentAllCases.sql'];
-probe.ignoreComments = 'on';
+probe.search.code='on';
+probe.search.comments ='off';
 probe.regex = '/SELECT/';
+//probe.traceMatchingLines = "on"
+await new TestExplorateur(title, probe, 31, 32, " count word SELECT uniquely in comments", false).run();
 
-await new TestExplorateur(title, probe, 31, 32, " count word SELECT after excluding comments", false).run();
+title = ('\n\n------------ 6-Starting tests for search in comments of SQL files ');
+//----- must have only real SELECT if sql dialect
+probe.keepExtension.includes = [".sql"];
+probe.skipFileIfName.notIncludes = ['SQLCommentAllCases.sql'];
+probe.search.code='off';
+probe.search.comments ='on';
+probe.regex = '/SELECT/';
+//probe.traceMatchingLines = "on"
+await new TestExplorateur(title, probe, 16, 16, " count word SELECT after excluding comments", false).run();
+
 
 title = ('\n------------ All tests passed ----------');

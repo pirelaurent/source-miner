@@ -49,28 +49,24 @@ export function endOfARootPathExploration(root, collect) {
     console.log(':'+alignTitle(`end of exploration of  [${this.shortPath(root)}]`,79, 5));
   }
   console.log(
-    `:     matching files: ${rfiles} / ${afiles} from ${rDirs} / ${aDirs} directories`
+    `:     matching files: ${rfiles}/${afiles} from ${rDirs}/${aDirs} directories`
   );
   const jump = (this.regex.source.length > 60) ? "\n: " : "";
 
   console.log(`:     found ${rMatches} regex:  ${jump} '${this.regex}'`)
+
+
+
   let effectiveLines = collect.count_all_lines - collect.count_empty_lines;
 
-  // only in case ignoreComments are empty lines and comment lines calculated.
-  
+
+  // adapt output to cases  
     let skip = "";
-    if (this.ignoreComments) {
-      effectiveLines = effectiveLines - collect.count_comment_lines;
-      skip = "(ignored)";
-    } else {
-      skip = "(not filtered)"
-    }
+      if (!this.searchInComments) skip = '(ignored)';
+
 
     console.log(
-      `:     parsed lines: ${effectiveLines.toLocaleString
-        ('fr-FR')} matching: ${mLines} / ${aLines} empty: ${collect.count_empty_lines.toLocaleString(
-          "fr-FR"
-        )}  comments: ${collect.count_comment_lines.toLocaleString('fr-FR')
+      `:     lines parsed: ${effectiveLines} matching: ${mLines}/${aLines} empty: ${collect.count_empty_lines}  comments: ${collect.count_comment_lines.toLocaleString('fr-FR')
       } ${skip}  `
     );
   
@@ -89,7 +85,7 @@ export function endOfARootPathExploration(root, collect) {
   */
   if (this.maxFilesToCheck < Number.MAX_SAFE_INTEGER) {
     console.log(
-      "********* Warning : was a partial run on ",
+      "⚠️  Warning : was a partial run on ",
       this.maxFilesToCheck,
       " max files ******" + " see explore.maxFilesToCheck ***"
     );
