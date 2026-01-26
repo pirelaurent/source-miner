@@ -8,11 +8,11 @@ In your probes, if some parameters are missing, it shows which defaults are appl
 
 ### Starting directories 
 
-```yaml
-commonOrigin: './'
-rootsToExplore: [ ]
-fullPathFromOs: off 
-```    
+
+    commonOrigin: './'
+    rootsToExplore: [ ]
+    fullPathFromOs: off 
+   
 - *commonOrigin*: './'
     - Defines the base directory for the scan.
     - Any relative entry in rootsToExplore is resolved from this path/
@@ -37,15 +37,15 @@ Relative or exact path names in output:
 
 ### Filters 
 
-```yaml 
-skipDirIfName:
-  includes: [ ]
-  notIncludes:  [ ] 
 
-skipFileIfName:
-  includes: [ ]
-  notIncludes: [ ]
-``` 
+    skipDirIfName:
+      includes: [ ]
+      notIncludes:  [ ] 
+
+    skipFileIfName:
+      includes: [ ]
+      notIncludes: [ ]
+
 
 Behavior and rationale
 - Filters allow regex or simple names
@@ -61,50 +61,48 @@ Why full paths are used in filters (especially for files)
     Filters should therefore be written carefully to avoid unintended matches.
 
 #### sample   
-```yaml 
-skipDirIfName:
-  includes: ['sales.*/perf','/V2/generated','jaxb' ]
-skipFileIfName:
-  includes: ['test' ]
-``` 
+
+    skipDirIfName:
+      includes: ['sales.*/perf','/V2/generated','jaxb' ]
+    skipFileIfName:
+      includes: ['test' ]
+
 
 ### file extension 
 
-```yaml 
-keepExtension:
-  includes: ['.java','.js','.yaml']  # json notation
-```
+
+    keepExtension:
+      includes: ['.java','.js','.yaml']  # json notation
+
 Or a more convenient yaml syntax allows to quickly change config using comments:
-```yaml 
-keepExtension:
-  includes: 
-    #- '.java'
-    - '.js'
-    #- '.yaml'
-```
+
+    keepExtension:
+      includes: 
+        #- '.java'
+        - '.js'
+        #- '.yaml'
+
 
 #### Some trace options to debug filters on dir and files 
 
-```yaml 
+
 # default for optional debug on the console flow 
-traceSelectedDir: off  
-traceRejectedDir: off
-traceSelectedFile: off
-traceRejectedFile: off
-```  
+    traceSelectedDir: off  
+    traceRejectedDir: off
+    traceSelectedFile: off
+    traceRejectedFile: off
+ 
 ### regex
 
 One can set a default Regex in the probe :
 Two notations are accepted: 
-```yaml
-regex:
-  pattern: '/where is Charlie/'
-  flags: 'gm'
-```
 
-```yaml 
-regex: '/where is Charlie/gm'
-```
+    regex:
+      pattern: '/where is Charlie/'
+      flags: 'gm'.  
+    # on a line :
+    regex: '/where is Charlie/gm'
+
 
 -	flags
 	- g (global): finds all matches (not just the first one).
@@ -115,11 +113,11 @@ regex: '/where is Charlie/gm'
 
 #### search options   
 
-``` yaml
-search:
-  code: on     # search in code 
-  comments: on # search in comment
-```  
+
+    search:
+      code: on     # search in code 
+      comments: on # search in comment
+
 By default the search goes full text.  
 
 - with comments **off**, source code is parsed in order to:    
@@ -134,20 +132,20 @@ In some case, if you want to search only in comments: *set code: off and leave c
 ### languages'profiles 
 
 Source-miner has profiles to exclude comments on demand for the following extensions:    
-```yaml
-['c','h','cpp','hpp','rust','go','java','kt','js','mjs','ts','cs','sql','yaml','yml','sh','bash','zsh','md']
-```  
+
+    ['c','h','cpp','hpp','rust','go','java','kt','js','mjs','ts','cs','sql','yaml','yml','sh','bash','zsh','md']
+ 
 
 >Filtering comments is approximately 5× more expensive than a plain search.   
->With a plain search, comment lines are not counted.   
+>With a plain search, comment lines count is not available.   
 
 ### Output on the fly
 
-```yaml
-traceMatchingLines: off
-showLinesBefore: 0
-showLinesAfter : 0
-``` 
+
+    traceMatchingLines: off
+    showLinesBefore: 0
+    showLinesAfter : 0
+
 
 - traceMatchingLines: 
   - *off* by default : no trace of matching lines along the scan
@@ -158,7 +156,7 @@ showLinesAfter : 0
 Sample extract below with 1 line before and 1 line after (regex *'/file/i'*):    
 
 
-    --------------- File: /explore/collector.mjs --------------
+    --------------- File: /explore/collector.mjs --------------   
     15:
     *16:    this.count_all_visited_files = 0;
     *17:    this.count_matching_files = 0;
@@ -168,10 +166,10 @@ Sample extract below with 1 line before and 1 line after (regex *'/file/i'*):
 
 ### Synthetic reports' levels
 
-```yaml 
-detailedReport: off
-```
-Similar reports are produced   
+
+    detailedReport: off
+
+Similar reports are produced:   
 	•	after each individual rootToExplore when *detailedReports* is enabled;   
 	•	after the complete scan in all cases.   
 
@@ -188,9 +186,11 @@ Sample of final report:
 
 #### Internal collect results
 
-The internal raw results is a dictionary. (key : array of [array per match]).   
-***match : [ [path | line Number | sourceLine], [path | line Number | sourceLine], ...]***.  
-The number of occurences of a match is the size of its associated array.   
+The internal raw results is a dictionary. (key : array of [array per match]).  
+
+    matchKey|matchGroup : [ [path | line Number | sourceLine], [path | line Number | sourceLine], ...]     
+
+The number of occurences of a match is the size of its associated array.     
 
 #### Output as tables 
 
@@ -202,11 +202,11 @@ To separate values, the separator is defined in probe and can be changed.
 
 Three levels of tables output can be set through probe:    
 
-```yaml 
-rank_key_path_line: on
-rank_key_path: on
-rank_key: on
-```
+
+    rank_key_path_line: on
+    rank_key_path: on
+    rank_key: on
+
 
 - rank : number of identical data matching :   
   - key : the matches detected by regex.  
@@ -253,11 +253,11 @@ rank_key: on
 ## Persist results 
 
 #### Simplest way 
-> Route *console* to file :  *node  search.mjs someProbe.yaml '/someRegex/gm'*  ***>someFile.txt***
+> Route *console* to file :  *node  search.mjs someProbe.yaml '/someRegex/'*  ***>someFile.txt***
 
-### get results by program   
+### Get results by program   
 
-Starting from the search.mjs program, you can adapt it and use the aggregated results for any further processing you need.   
+Starting from the *search.mjs* program, you can adapt it and use the aggregated results for any further processing you need.   
 
     let probe = getProbeFromCommandLine();
     let explore = new Explorateur(probe);
@@ -268,7 +268,7 @@ Starting from the search.mjs program, you can adapt it and use the aggregated re
 
 ---   
 
-#### Development over explorateur.mjs :
+#### Development using Explorateur class :
 
 - Create new apps.      
 	•	configure probe parameters programmatically.  

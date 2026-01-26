@@ -35,7 +35,7 @@ This preserves:
 ### `search.mjs` CLI application
 
 
-• from the command line: load a probe and replace the regex if any
+• from the command line: load a probe and an optional regex to overwrite the probe's one
 • instantiate an Explorateur
 • run it
 
@@ -62,6 +62,7 @@ Examples:
     probe.keepExtension.includes = [".java"];
 
     // search only in code, not in comments
+    search.code = "on".  
     search.comments = "off"
 
     // case-insensitive search ( flags gm are implicit if not set)
@@ -103,7 +104,7 @@ See the source: `explore/explorateur.mjs`
 
 Any method can be overridden replacing or reusing parent method via `super`.
 
-Sample : trace and skip a special directories overwritting *skipDirectory* method: 
+Sample : trace and skip a special directory, overwritting *skipDirectory* method: 
 
     /*
     Contract
@@ -117,6 +118,7 @@ Sample : trace and skip a special directories overwritting *skipDirectory* metho
         console.log(currentPath)
         return true
       }
+      # let standard code running for others
       return super.skipDirectory(currentPath)
     }
 
@@ -176,13 +178,13 @@ See source code ***collector.mjs*** for detailed content.
 
 When several `rootsToExplore` are defined:
 
-•	 They are processed by `run()`,
+•	 They are processed by a loop in `run()` method,
 •	 Each root produces its own collect,
 •	 All collects are merged into a final one by the run function,
 •	 A final `endOfARootPathExploration` is called with the final merged result.
 
 ### final result 
-This final collect is returned by `run()` to be processed outside if useful:
+This final collect is returned by `run()` for processing outside if useful:
 
     const finalCollect = await new Explorateur(probe).run();
 
@@ -201,19 +203,19 @@ Each `Collect` contains a dictionary of matches:
 
 The key comes from from the regex result:
 
-- direct match:
+- simple regex:
   - `"File"`
-- grouped regex:
+- regex with groups:
   - group values joined with | ( `probe.separator` parameter)
   - e.g. `"new|someclassCatched"`
 
 #### Value structure
 
-Every match is stored as:
+Every elementary match is stored as:
 
-    [ fullPath, lineNumber, lineText ]
+    [ file's fullPath, lineNumber, lineText ]
 
-Value structure : array of matches 
+Value structure : array of elementary matches 
 
     key: [
       [fullPath, lineNumber, lineText],[fullPath, lineNumber, lineText],...
@@ -239,41 +241,44 @@ See standard reports in chapter Probe :
 
 ### Example to look at : *samples/searchInJava.mjs*
 
-This code runs three successive regex searches on a Java project to match:
+This code runs three successive regex with catch groups on a Java project to search:
 - `new` 
 - `import|package` in one round 
 - `class|Interface|enum|record` in one round
 
 Results are collected in three lists :
 
-    new|classInstantiatedName
+    new|classInstantiatedName:  [[path,No,line][path,No,line] etc.]
 
-    import|importedPackageName
-    package|packageName
+    import|importedPackageName: [[],[]]
+    package|packageName: [[],[]]
 
-    class|classNameDeclaration
-    Interface|interfaceNameDeclaration
-    enum|enumName
-    record|recordName
+    class|classNameDeclaration: [[],[]]
+    Interface|interfaceNameDeclaration: [[],[]]
+    enum|enumName: [[],[]]
+    record|recordName: [[],[]]
 
 #### ranking and output top 10
 
-  The rank is the number of match per key (array size of [ [ fullPath, lineNumber, lineText ],... ]
-  The sample code sort by rank and output the top 10 
+  The rank is the number of match per key ( array size of [[...][...]...] ).  
+  The sample code :   
+    - dispatch by distinct first part of match    
+    - sort by rank    
+    - output the top 10    
 
 ### Sample output for *import*
 
-    ---------------------- top 10 imports ----------------------
-    [ 'import|java.util.List', 5624 ]
-    [ 'import|java.util.ArrayList', 2653 ]
-    [ 'import|jakarta.xml.bind.annotation.XmlType', 1853 ]
-    [ 'import|jakarta.xml.bind.annotation.XmlAccessType', 1601 ]
-    [ 'import|jakarta.xml.bind.annotation.XmlAccessorType', 1601 ]
-    [ 'import|org.springframework.beans.factory.annotation.Autowired', 1447 ]
-    [ 'import|java.io.Serializable', 1351 ]
-    [ 'import|java.sql.Timestamp', 1233 ]
-    [ 'import|java.sql.Date', 1186 ]
-    [ 'import|jakarta.xml.bind.annotation.XmlAttribute', 999 ]
+    ---------------------- top of imports --------------------
+    [ 'import|com.pep-inno.cercle_ia.common.constant.ciaPropertiesConstant', 773 ]
+    [ 'import|com.pep-inno.cercle_ia.common.Constant', 685 ]
+    [ 'import|com.pep-inno.gap.od.pc.MainEquipmentData', 631 ]
+    [ 'import|com.pep-inno.util.log.LogManager', 572 ]
+    [ 'import|com.pep-inno.cercle_ia.domain.dao.GenDebilAO', 538 ]
+    [ 'import|com.pep-inno.cercle_ia.data.UserContextData', 521 ]
+    [ 'import|com.pep-inno.cercle_ia.UserContext', 463 ]
+    [ 'import|com.pep-inno.util.cia.DateUtil', 456 ]
+    [ 'import|com.pep-inno.cercle_ia.config.ciaProperties', 401 ]
+    [ 'import|com.pep-inno.util.cia.CollectionUtil', 378 ]
 
 
 ### do more 
@@ -288,12 +293,24 @@ No mystery, just js code.
 
 ---
 
-## Async model
+## A few tips 
+
+#### Async run 
 
 Some methods are asynchronous, but a deliberate design choice was made:
 
-> Directory traversal is intentionally **sequential and deterministic**.  
+> Directory traversal is intentionally **sequential and deterministic** by default.  (*probe.executionMode = "sequential"*)   
 > Files and subdirectories are processed one at a time to keep ordering, reporting, and resource usage predictable.   
+
+But for experiment, you can try *probe.executionMode = "parallel"*     
+
+#### log(..)  in place of console.log(..)
+
+For debug use log(..) that add the source and line this log occurs : *[source code:line number] text of log*
+
+    log(`rejected new ${rejectNew}`) // in source 
+    # output on console : 
+    [searchInJava.mjs:94] rejected new [ 'String', 'Integer', 'Double' ]
 
 ---  
 

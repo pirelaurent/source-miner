@@ -36,7 +36,7 @@ It describe source-miner project itself :
         - '.mjs'
         - '.yaml'
 
-    regex: 
+    regex:  
       pattern: '/file/'
       flags: i
 
@@ -45,11 +45,11 @@ It describe source-miner project itself :
 
 #### synthetic report  
 
-  --------------------------------------------------------------------------------
-  :     matching files: 14/17 from 4/4 directories
-  :     found 227 regex:   '/file/gim'
-  :     parsed lines: 1 971 matching: 184/2461 empty: 490  comments: 0 (not filtered)
-  --------------------------- Time elapsed :  0s 15ms  ---------------------------
+    --------------------------------------------------------------------------------   
+    :     matching files: 14/17 from 4/4 directories
+    :     found 227 regex:   '/file/gim'
+    :     parsed lines: 1 971 matching: 184/2461 empty: 490  comments: 0 (not filtered)
+    --------------------------- Time elapsed :  0s 15ms  ---------------------------
 
 > All detailed results   
 > - can be displayed on the fly   
@@ -81,7 +81,7 @@ It describe source-miner project itself :
     -------------------------- Time elapsed :  0s 657ms  ---------------------------
  
 You can scan the source as is, or choose only pure code or only comments.   
-Mind the overhead x5 to split for code or comments:   
+Mind the overhead x5 to split code and comments:   
 
 #####   11648 sources scanned `search.comments: off` in 5s 08ms
 

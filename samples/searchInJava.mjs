@@ -91,6 +91,7 @@ probe.regex = {
 // node search someYaml '/\bnew\s+([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)(?:\s*<[^>]+>)?\s*(?:\(|\[)/gm'
 
 let rejectNew=['String','Integer','Double']
+
 console.log(`--> search for "new someClass" excluding ${rejectNew}`)
 let collectNew = await new PlusExplorateur(probe).run();
 // composite result key: |new|inGroup   value

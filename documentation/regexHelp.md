@@ -84,66 +84,67 @@ The tool accepts regular expressions from three contexts.
 Each context has different escaping rules.    
 
 ### 1) Command line (CLI)
-	•	Regex arguments are shell strings.   
-	•	Always quote them.   
-	•	On macOS / Linux / WSL, prefer single quotes.   
+
+- Regex arguments are shell strings.   
+- Always quote them.    
+- On macOS / Linux / WSL, prefer single quotes.   
 
 Use
-```shell 
-node search.mjs probe.yaml '/pattern/flags'
-``` 
+
+      node search.mjs probe.yaml '/pattern/flags'
+
 
 Notes
-	•	Do not escape backslashes when using single quotes.
-	•	/pattern/flags is the safest and recommended CLI form.
+- Do not escape backslashes when using single quotes.  
+- /pattern/flags is the safest and recommended CLI form.  
 
 ⸻
 
 ### 2) YAML probe files
-	•	YAML values are passed as strings to JavaScript.
-	•	Backslashes must be escaped once.
-	•	Both combined and split forms are accepted.
+- YAML values are passed as strings to JavaScript.   
+- Backslashes must be escaped once.  
+- Both combined and split forms are accepted.  
 
 Recommended
-```  shell 
-regex:
-  pattern: '\\bword\\s+\\w+'
-  flags: 'gi'
-``` 
+
+      regex:
+      pattern: '\\bword\\s+\\w+'
+      flags: 'gi'
+
 Alternative
 
-```shell
-regex: '/\bword\s+\w+/gi'
-```
+
+      regex: '/\bword\s+\w+/gi'
+
 
 ⸻
 
 ### 3) JavaScript code
-	•	JavaScript strings require double escaping.
-	•	Prefer the split form to avoid ambiguity.
+- JavaScript strings require double escaping.   
+- Prefer the split form to avoid ambiguity.   
 
-``` shell
-probe.regex = {
-  pattern: '\\bword\\s+\\w+',
-  flags: 'gi'
-};
-``` 
+
+      probe.regex = {
+      pattern: '\\bword\\s+\\w+',
+      flags: 'gi'
+      };
+
 
 ⸻
 
 ### General recommendations
 
-	•	Internally, you can normalize to *{ pattern:   , flags:   }*.
-	•	Use */pattern/flags* only for CLI convenience.
-	•	If a regex works in JS but not in YAML or CLI, check escaping first or ask AI.
+- Internally, you can normalize to *{ pattern:   , flags:   }*.  
+- Use */pattern/flags* only for CLI convenience.   
+- If a regex works in JS but not in YAML or CLI, check escaping first or ask AI.   
 
 ⸻
 
 ### Common mistakes to avoid
 
-	•	Confusing regex literals (/.../) with strings
-	•	Forgetting that \ must be escaped in YAML and JS
-	•	Passing JavaScript object literals on the command line
+- Confusing regex literals (/.../) with strings.      
+- Forgetting that \ must be escaped in YAML and JS.  
+- Passing JavaScript object literals on the command line.  
 
 ⸻
 
