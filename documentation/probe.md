@@ -85,8 +85,6 @@ Or a more convenient yaml syntax allows to quickly change config using comments:
 
 #### Some trace options to debug filters on dir and files 
 
-
-# default for optional debug on the console flow 
     traceSelectedDir: off  
     traceRejectedDir: off
     traceSelectedFile: off
@@ -120,14 +118,15 @@ Two notations are accepted:
 
 By default the search goes full text.  
 
-- with comments **off**, source code is parsed in order to:    
-  - remove comment lines, according to the file extension    
-  - remove inline comment parts from lines that also contain code    
-  - count each line affected by a comment in *comment_lines* counter. 
-  - return comment-free code to the search engine     
-
-This option is useful when comments introduce noise in search results.  
-In some case, if you want to search only in comments: *set code: off and leave comments:on *
+- with one option **off**, source is parsed in order to split code and comments. 
+  - comments are :     
+    - comment lines, according to the file extension    
+    - inline comment parts from lines   
+    - if a line has comment *comment_lines* counter is increased.
+  - code is : 
+    - the remaining when comments are removed 
+       
+These options are useful to analyse and avoid noise in code search results.  
 
 ### languages'profiles 
 
@@ -137,7 +136,7 @@ Source-miner has profiles to exclude comments on demand for the following extens
  
 
 >Filtering comments is approximately 5× more expensive than a plain search.   
->With a plain search, comment lines count is not available.   
+>Notice that with a plain search, comment lines count is not available.   
 
 ### Output on the fly
 
@@ -149,9 +148,9 @@ Source-miner has profiles to exclude comments on demand for the following extens
 
 - traceMatchingLines: 
   - *off* by default : no trace of matching lines along the scan
-  - ***on***. Any match will trace the line on console
+  - ***on***. Any match will trace the line on console when a match occurs.  
   - Surrounding lines *before* or/and *after* can also be traced to give more context. 
-    - if any: matching lins have a star, surrounding have not 
+    - if any: matching lines have a star, surrounding have not 
 
 Sample extract below with 1 line before and 1 line after (regex *'/file/i'*):    
 
@@ -184,7 +183,7 @@ Sample of final report:
 
 ### Results 
 
-#### Internal collect results
+#### Internal collected results
 
 The internal raw results is a dictionary. (key : array of [array per match]).  
 

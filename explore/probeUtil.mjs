@@ -67,14 +67,18 @@ export function flattenProbe() {
 
   this.commonOrigin =
     this.probeRun.commonOrigin ?? "./";   //"~/";
-  this.rootsToExplore = this.probeRun.rootsToExplore ?? [];
+
+  this.probeRun.rootsToExplore ??= [];
+  this.rootsToExplore = this.probeRun.rootsToExplore;
   //cannot start with empty array
   if (!this.rootsToExplore || this.rootsToExplore.length == 0) this.rootsToExplore = [""];
 
 
 
   // some default
-  this.extensionsToRetain = this.probeRun.keepExtension?.includes ?? ['.java', '.js', '.mjs', '.yaml'];
+  this.probeRun.keepExtension ??= {};
+  this.probeRun.keepExtension.includes ??= [".java", ".js", ".mjs", ".yaml"];
+  this.extensionsToRetain = this.probeRun.keepExtension.includes;
   // normalize extension list in .xxx lowercase
   for (let i in this.extensionsToRetain) {
     this.extensionsToRetain[i] = this.extensionsToRetain[i].toLowerCase();
@@ -123,11 +127,11 @@ export function flattenProbe() {
   // previous ignoreComment is : this.searchInCode && !this.searchInComments
 
   this.probeRun.search ??= {};
-  this.searchInCode = (this.probeRun.search.code?? "on")=== "on";
-  this.searchInComments = (this.probeRun.search.comments?? "on")=== "on";
+  this.searchInCode = (this.probeRun.search.code ?? "on") === "on";
+  this.searchInComments = (this.probeRun.search.comments ?? "on") === "on";
 
   // case both to off 
-  if(!this.searchInCode && ! this.searchInComments){
+  if (!this.searchInCode && !this.searchInComments) {
     console.log('❌  ERROR : Nothing to search: search.code and search.comments are off');
     console.log('. Program exit');
     process.exit(1);
@@ -190,9 +194,9 @@ export function displayProbe() {
   console.log(`: roots: [${probe.commonOrigin}] x [${probe.rootsToExplore}]`);
   let filter = '-per line';
   let comment = '';
-  if(this.searchInCode && this.searchInComments) filter = '(plain source)';
-   if(this.searchInCode && !this.searchInComments) filter = '(code only)';
-      if(!this.searchInCode && this.searchInComments) filter = '(comments only)';
+  if (this.searchInCode && this.searchInComments) filter = '(plain source)';
+  if (this.searchInCode && !this.searchInComments) filter = '(code only)';
+  if (!this.searchInCode && this.searchInComments) filter = '(comments only)';
 
   console.log(`: regex: '${this.regex}'  ${filter}  ${comment} `);
 

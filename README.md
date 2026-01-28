@@ -71,7 +71,7 @@ It describe source-miner project itself :
     ------------------------------- probe parameters -------------------------------
     : roots: [~//dev/bigData/mySandBox/] x [backend]
     : regex: '/import/gm'  (plain source)
-    : skip dir if: includes:[test,generated,s5000f]  notIncludes:[]
+    : skip dir if: includes:[test,generated]  notIncludes:[]
     : extensions:[.java]
     --------------------------------------------------------------------------------
     :---------------      end of exploration of group [backend]      ---------------

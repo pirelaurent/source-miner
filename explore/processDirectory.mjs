@@ -125,6 +125,7 @@ export async function processDirectory(directoryPath, depth = 0) {
          Process a file (of current dir), except if dir rejected as not containing some strings
          Apply filter on file names
         */
+ 
       if (this.skipFile(fullPath)) continue;
       // a file is candidate 
       this.fileSelectedEvent(fullPath);

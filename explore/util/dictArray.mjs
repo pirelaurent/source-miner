@@ -1,4 +1,4 @@
-import { log } from "console";
+import { log } from "./logger.mjs"
 
 /*
  class with a dict holding an array of (any)things  key : [ thing1, thing2 etc ])
@@ -70,7 +70,6 @@ class DictArray {
         result.push([key, value.length]);
       }
     }
-
     return result.sort((a, b) => b[1] - a[1]);
   }
 
@@ -134,10 +133,10 @@ class DictArray {
     }
   }
 
-/*
-   regex with OR and group can collect composite keys. 
-   Here they are filtered in a new dictionnaries 
-  */
+  /*
+     regex with OR and group can collect composite keys. 
+     Here they are filtered in a new dictionnaries 
+    */
 
 
   filterKeysByPrefix(prefix) {
@@ -170,6 +169,32 @@ class DictArray {
     let addOn = this[key] > 1 ? `(${this[key] - 1})` : "";
     return key + addOn;
   }
+
+  /*
+    Split a merged result of regex (when alternatives exists with a | b ...)
+    => it could be more efficient to group in one scan n search and filter later rather than n search.
+  
+    into a new dict with as many independant list as there is alternatives 
+    a:   a:etc list
+    b:   b:etc list
+  */
+  splitByPrimaryKey(sepa = "|") {
+    const result = {};
+    for (const [compositeKey, arr] of Object.entries(this)) {
+      const [primary] = compositeKey.split(sepa, 1);
+      if (!result[primary]) {
+        result[primary] = new DictArray();
+      }
+      result[primary].add(compositeKey,arr);
+    }
+    return result;
+  }
+
+
+
+
+
+
 } //class
 
 /*
@@ -213,9 +238,8 @@ class OccurrenceCounter {
   }
 
 
-  
-}
 
+}//Occurences counter
 
 
 export { DictArray };

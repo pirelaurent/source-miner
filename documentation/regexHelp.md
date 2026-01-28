@@ -7,7 +7,7 @@ Regex are powerful tools for matching patterns in strings.
 
  I ask an AI to get a regex for catching instanciations *new someClass* from java sources :     
  I precise 'for js code' (as escaping \ of regex as \\ is significant in js)     
- ( Think aboout to precise your usage to AI : for javascript, for yaml, for shell. ).   
+ ( Think about to precise your usage to AI : for javascript, for yaml, for shell. ).   
  
       regex.pattern =
       '\\bnew\\s+([A-Za-z_]\\w*(?:\\.[A-Za-z_]\\w*)*)(?:\\s*<[^>]+>)?\\s*(?:\\(|\\[)';
@@ -20,11 +20,22 @@ Regex are powerful tools for matching patterns in strings.
 
 While constructing such a regex manually is headache, an AI can not only generate it but also explain its structure and behavior.   
 
-=> ask AI
+>***When asking an AI, be specific about your use case.*** 
+
+### Important to remember if you patch manually
+
+👉 As soon as a regex goes through a string (JS code or YAML → JS),the \x sequences are interpreted before reaching the regex engine.
+
+Therefore:   
+	•	\s, \b, \d, etc. must be double-escaped   
+	•	otherwise they become:   
+	   •	\b → backspace (ASCII 8).   
+	   •	\s → s   
+	   •	\d → d   
 
 --- 
 
-Some basic regex concepts you may want to know can be helpful.
+### Some basic regex concepts you may want to know can be helpful.
 
 1. **Literal Characters**:
    - Matches exact characters. For example, `cat` matches the string "cat".
@@ -108,8 +119,8 @@ Notes
 Recommended
 
       regex:
-      pattern: '\\bword\\s+\\w+'
-      flags: 'gi'
+         pattern: '\\bword\\s+\\w+'
+         flags: 'gi'
 
 Alternative
 
@@ -125,8 +136,8 @@ Alternative
 
 
       probe.regex = {
-      pattern: '\\bword\\s+\\w+',
-      flags: 'gi'
+         pattern: '\\bword\\s+\\w+',
+         flags: 'gi'
       };
 
 

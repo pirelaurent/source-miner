@@ -54,9 +54,8 @@ export async function processFile(filePath) {
   if (!this.searchInCode || !this.searchInComments) {
     const results = splitCodeAndComments(data,collect);
     data = isolateSearchedData (results,this.searchInCode,collect) // otherwise comments
+
   }
-
-
 
   const showLineIdx = new Set(); // lignes à afficher (match + contexte)
   const matchIdx = new Set(); // lignes qui matchent
@@ -77,6 +76,7 @@ export async function processFile(filePath) {
   const after = this.showExtraLinesAfterMatch;
   // get all match in one round 
   const matches = Array.from(data.matchAll(collect.regex));
+
   if (matches.length > 0) {
     collect.match = true;
     // as can be several, loop

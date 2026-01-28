@@ -35,9 +35,9 @@ This preserves:
 ### `search.mjs` CLI application
 
 
-• from the command line: load a probe and an optional regex to overwrite the probe's one
-• instantiate an Explorateur
-• run it
+• from the command line: load a probe and an optional regex to overwrite the probe's one.   
+• instantiate an Explorateur.   
+• run it.   
 
 
     let probe = getProbeFromCommandLine();
@@ -53,8 +53,8 @@ To load a probe programmatically, outside command line:
 
 To understand probe configuration, see [probe reference guide](../README.md#probe-reference-guide)
 
-Any missing entry takes default values as shown by *modelProbe.yaml*
-Any YAML entry can be set programmatically, provided the yaml structure is respected:
+Any missing entry takes default values as shown by *modelProbe.yaml*.   
+Any YAML entry can be set programmatically, provided the yaml structure is respected:    
 
 Examples: 
 
@@ -178,13 +178,13 @@ See source code ***collector.mjs*** for detailed content.
 
 When several `rootsToExplore` are defined:
 
-•	 They are processed by a loop in `run()` method,
-•	 Each root produces its own collect,
-•	 All collects are merged into a final one by the run function,
-•	 A final `endOfARootPathExploration` is called with the final merged result.
+•	 They are processed by a loop in `run()` method,   
+•	 Each root produces its own collect,   
+•	 All collects are merged into a final one by the run function,   
+•	 A final `endOfARootPathExploration` is called with the final merged result.   
 
 ### final result 
-This final collect is returned by `run()` for processing outside if useful:
+This final collect is returned by `run()` for processing outside if useful:   
 
     const finalCollect = await new Explorateur(probe).run();
 
@@ -239,7 +239,7 @@ See standard reports in chapter Probe :
 
 ## Develop new search and new reports 
 
-### Example to look at : *samples/searchInJava.mjs*
+### Sample to look at : *samples/searchInJava.mjs*
 
 This code runs three successive regex with catch groups on a Java project to search:
 - `new` 
@@ -264,7 +264,7 @@ Results are collected in three lists :
   The sample code :   
     - dispatch by distinct first part of match    
     - sort by rank    
-    - output the top 10    
+    - output the top 10 occurences 
 
 ### Sample output for *import*
 
@@ -289,7 +289,57 @@ On this basis, you can
 - store your results in file or in db 
 - Even prepare refactoring by search and replace 
 
-No mystery, just js code. 
+
+### Example to look at : *samples/searchJavaAnnotations.mjs*
+
+This sample doesn't use any *probe.yaml*.   
+It set by code all options that are not default and can run directly by `node searchJavaAnnotations.mjs`.    
+
+#### first round  
+
+It searches in one round all annotions like @xxxmapping :   
+
+    const MAPPING_ANNOTATION_RE =
+      '/@\\s*(?:requestmapping|getmapping|putmapping|postmapping|patchmapping|deletemapping)\\b/i';
+
+The simple standard output option `probe.rank_key = 'on';` will give the follwing output:
+
+      ------------------------ Global : total number of key   ------------------------
+      Nb|key
+      1761|@RequestMapping
+      1296|@PostMapping
+      982|@GetMapping
+      61|@PatchMapping
+      16|@DeleteMapping
+      10|@PutMapping
+      --------------------------------------------------------------------------------
+#### second round   
+
+It searches the same keys but capture the parameters of the annotations :    
+
+    // capture two groups : keyword and args 
+    // |RequestMapping|(value="/is_background_job_running_by_job_name", method=RequestMethod.POST)
+    const MAPPING_WITH_ARGS_RE =
+      '/@\\s*(requestmapping|getmapping|putmapping|postmapping|patchmapping|deletemapping)\\b\\s*(\\([^)]*\\))?/i'; 
+
+ The results are catched after the run then dispatched in their own collection 
+
+    let results = await new PlusExplorateur(probe).run();
+    let allAnnotations = results.key_array_of_path;
+    // dispatch in dict by individual a, b, c.  from search a|b|c
+    let splitResults=allAnnotations.splitByPrimaryKey(probe.separator);
+
+As a demonstration code, it list the first lines of each collection like the one below:   
+
+      -------------- list of first 5. GetMapping  with parameters ---------------
+      GetMapping|(path="/custom")
+      GetMapping|(path="/login_zone")
+      GetMapping|("/catalogs")
+      GetMapping|("/generic/{key}")
+      GetMapping|("/generic/{pkey}/{key}")
+
+
+### No mystery, just js code. 
 
 ---
 
@@ -302,11 +352,11 @@ Some methods are asynchronous, but a deliberate design choice was made:
 > Directory traversal is intentionally **sequential and deterministic** by default.  (*probe.executionMode = "sequential"*)   
 > Files and subdirectories are processed one at a time to keep ordering, reporting, and resource usage predictable.   
 
-But for experiment, you can try *probe.executionMode = "parallel"*     
+But for experiment, you can try *probe.executionMode = "parallel"* , parallel runs per roots.      
 
-#### log(..)  in place of console.log(..)
+#### log(..) function in place of console.log(..)
 
-For debug use log(..) that add the source and line this log occurs : *[source code:line number] text of log*
+For debug use log(..) that add the source and line where this log occurs : *[source code:line number] text of log*
 
     log(`rejected new ${rejectNew}`) // in source 
     # output on console : 
@@ -315,5 +365,5 @@ For debug use log(..) that add the source and line this log occurs : *[source co
 ---  
 
   [Installation](Install.md)  
-  [probe references guide](probe.md)      
+  [probe reference guide](probe.md)      
   [master regex](regexHelp.md) 

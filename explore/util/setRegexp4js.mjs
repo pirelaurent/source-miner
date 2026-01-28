@@ -64,7 +64,6 @@ export function setRegexp4js(regexFromYaml) {
   if (typeof regexFromYaml === "string") {
     // ex: "/comment/g" ou "comment"
     const s = regexFromYaml.trim();
-
     if (s.startsWith("/")) {
       const lastSlash = s.lastIndexOf("/");
       if (lastSlash <= 0) {

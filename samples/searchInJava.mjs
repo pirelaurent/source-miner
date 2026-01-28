@@ -32,15 +32,6 @@ class PlusExplorateur extends Explorateur {
   }
 } // ------------- end of class PlusExplorateur 
 
-/*
-  utility : 
-    sort results by occurences 
-    output the top ten 
-*/
-function showTop(dict, howMany = 10) {
-  const byOccurences = dict.sortedByOccurrencesDesc();
-  byOccurences.slice(0, howMany).forEach(x => console.log(x))
-}
 
 /*
   as a regex result with group is of type:  result|resultGroup
@@ -63,6 +54,19 @@ function filterCompositeKeys(dico, prefix, rejects = [], sepa = '|') {
   return out;
 }
 
+/*
+  utility : 
+    sort results by occurences 
+    output the top ten 
+*/
+function showTopOccurences(dico, howMany = 10) {
+  const byOccurences = dico.sortedByOccurrencesDesc();
+  byOccurences.slice(0, howMany).forEach(x => console.log(x))
+}
+
+
+
+
 
 /*
   Main work : 
@@ -77,8 +81,7 @@ let startTime = new Date();
 // prepare an instance of Explorateur with a probe from command line: node searchInjava.mjs searchInJava.yaml 
 let probe = getProbeFromCommandLine();
 
-const sepa = '|'
-probe.separator = sepa; // as we use it later, be sure of choice 
+probe.separator = '|'; 
 
 // search instanciations ( new x )
 // regex for js \ are escaped
@@ -97,8 +100,8 @@ let collectNew = await new PlusExplorateur(probe).run();
 // composite result key: |new|inGroup   value
 //  value:  array of n [filePath, lineNumber, lineText] 
 let newResults = collectNew.key_array_of_path;
-let newDA = filterCompositeKeys(newResults,'new',rejectNew,sepa);
-showTop(newDA, 10)
+let newDA = filterCompositeKeys(newResults,'new',rejectNew,probe.separator);
+showTopOccurences(newDA,10);
 
 //---------------------------- package or import in a run 
 probe.regex = {
@@ -113,14 +116,14 @@ let collectPackages = await new PlusExplorateur(probe).run();
 
 let dictResults = collectPackages.key_array_of_path; 
 
-const importsDA = filterCompositeKeys(dictResults,'import',rejectImports,sepa);
+const importsDA = filterCompositeKeys(dictResults,'import',rejectImports,probe.separator);
 console.log(`---------------------- top of imports --------------------`);
-showTop(importsDA, 10)
+showTopOccurences(importsDA,10);
 
 
-const packagesDA = dictResults.filterKeysByPrefix("package" + sepa);
+const packagesDA = dictResults.filterKeysByPrefix("package" + probe.separator);
 console.log(`---------------------- top of package declarations --------------------`);
-showTop(packagesDA, 10)
+showTopOccurences(packagesDA,10);
 
 //---------------------------- class, interface, enum , record 
 
@@ -134,21 +137,21 @@ probe.regex = {
 let collectDeclaration = await new PlusExplorateur(probe).run();
 
 let dictDeclaration = collectDeclaration.key_array_of_path;
-const classesDA = dictDeclaration.filterKeysByPrefix("class" + sepa);
+const classesDA = dictDeclaration.filterKeysByPrefix("class" + probe.separator);
 console.log(`---------------------- top of class --------------------`);
-showTop(classesDA, 10)
+showTopOccurences(classesDA,10);
 
-const interfacessDA = dictDeclaration.filterKeysByPrefix("interface" + sepa);
+const interfacesDA = dictDeclaration.filterKeysByPrefix("interface" + probe.separator);
 console.log(`---------------------- top of interface --------------------`);
-showTop(interfacessDA, 10)
+showTopOccurences(interfacesDA,10);
 
-const enumDA = dictDeclaration.filterKeysByPrefix("enum" + sepa);
+const enumDA = dictDeclaration.filterKeysByPrefix("enum" + probe.separator);
 console.log(`---------------------- top of enum --------------------`);
-showTop(enumDA, 10)
+showTopOccurences(enumDA,10);
 
-const recordDA = dictDeclaration.filterKeysByPrefix("record" + sepa);
+const recordDA = dictDeclaration.filterKeysByPrefix("record" + probe.separator);
 console.log(`---------------------- top of record --------------------`);
-showTop(recordDA, 10)
+showTopOccurences(recordDA,10);
 
 
 /*
