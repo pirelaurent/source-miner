@@ -72,6 +72,9 @@ showLinesAfter : 0
 #----------------------------------
 # Reports 
 #----------------------------------
+
+displayProbe: "off"
+
 # intermediate report for each rootToExplore
 detailedReport: off
 

@@ -11,7 +11,7 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 
-import { setProbe as setProbeImpl, flattenProbe as flattenProbeImpl, displayProbe as displayProbeImpl } from "./probeUtil.mjs";
+import { mergeDeep, displayProbeOnConsole as displayProbeOnConsoleImpl, flattenProbe as flattenProbeImpl } from "./probeUtil.mjs";
 import { Collect } from "./collector.mjs";
 
 // specific readers
@@ -25,7 +25,7 @@ import {
   skipDirectory as skipDirectoryImpl,
 } from "./processDirectory.mjs";
 
-
+import { getDefaultProbe } from "./probeUtil.mjs";
 
 
 
@@ -49,19 +49,25 @@ import { resolveCommonOrigin, alignTitle } from "./util/variousUtil.mjs";
 
 class Explorateur {
   constructor(someProbe) {
+    this.probeRun = getDefaultProbe();
+    // apply changes of key if any 
+    if (someProbe) {
+      mergeDeep(this.probeRun, someProbe);
+       this.flattenProbe();
+    }
+    
+    this.global_collect = new Collect("explorateur");
+
+ // internal limits for debug
     this.maxFilesToCheck = Number.MAX_SAFE_INTEGER;
     this.checkedFiles = 0;
-
-    this.probeRun = {};
-    if (someProbe) this.setProbe(someProbe);
-    this.global_collect = new Collect("explorateur");
   }
 
   /* ------------------------ PROBE METHODS ------------------------ */
 
   // assign a probe to explorateur
-  setProbe(someProbe) {
-    return setProbeImpl.call(this, someProbe);
+  patchProbeRun(someProbe) {
+    return patchProbeRunImpl.call(this, someProbe);
   }
 
   // change yaml entries to internal booleans and variables 
@@ -70,8 +76,8 @@ class Explorateur {
   }
 
   // output probe on console  . Can be overwritten to set quiet 
-  displayProbe(aProbe) {
-    return displayProbeImpl.call(this, aProbe);
+  displayProbeOnConsole(aProbe) {
+    return displayProbeOnConsoleImpl.call(this, aProbe);
   }
 
   /* ------------------------ READER METHODS ------------------------ */
@@ -238,7 +244,7 @@ class Explorateur {
     this.commonOrigin = resolveCommonOrigin(this.commonOrigin)
 
     // show current parameters 
-    this.displayProbe();
+    if (this.displayProbe) this.displayProbeOnConsole();
 
     this.fullRoots = [];
     for (let aPath of this.rootsToExplore) {
@@ -263,7 +269,7 @@ class Explorateur {
       await this.runParallel();
     }
     else {
-      console.log(' run sequential ');
+      //console.log(' run sequential ');
       await this.runSequential()
     };
 

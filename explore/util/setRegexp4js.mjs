@@ -107,7 +107,8 @@ export function setRegexp4js(regexFromYaml) {
 
   // 4) Compilation
   try {
-    return new RegExp(pattern, flags);
+    let re =new RegExp(pattern, flags);
+    return re;
   } catch (e) {
     console.error("**** Invalid regex:", pattern, flags);
     console.error(e.message);

@@ -3,9 +3,7 @@ import yaml from "js-yaml";
 import { setRegexp4js } from "./util/setRegexp4js.mjs";
 import { alignTitle, escapeRegex } from "./util/variousUtil.mjs"
 import { log, warn, error } from "./util/logger.mjs";
-import { getSystemErrorMap } from "util";
 import { compileIncludesRegex, regIncludes } from "./util/setRegexp4js.mjs";
-
 
 /*
  facility to read probe from a file as yaml or json 
@@ -48,16 +46,87 @@ export function readProbeFromFile(someFilePath) {
   }
 }
 
-/*
-   set context from Js structure . replace entries. Can be partial
-   as it uses this, need to be connected 
- */
-export function setProbe(aProbe) {
-  for (const key in aProbe) {
-    this.probeRun[key] = aProbe[key];
+export function mergeDeep (target, source){
+    // iterate over keys in source
+    Object.keys(source).forEach(key => {
+      const srcVal  = source[key];
+      const tgtVal  = target[key];
+
+      // if the source value is an array, replace the target with a clone of the array
+      if (Array.isArray(srcVal)) {
+        target[key] = srcVal.slice();
+      }
+      // if both source and target are plain objects, merge recursively
+      else if (srcVal !== null && typeof srcVal === 'object' &&
+               tgtVal !== null && typeof tgtVal === 'object' &&
+               !Array.isArray(tgtVal)) {
+        mergeDeep(tgtVal, srcVal);
+      }
+      // otherwise just assign
+      else {
+        target[key] = srcVal;
+      }
+    });
   }
-  this.flattenProbe();
+
+
+/*
+ create all default options in a new probe for programming 
+*/
+
+
+export function getDefaultProbe() {
+  let probe = {};
+  probe.commonOrigin = "./";
+  probe.rootsToExplore = [];
+  probe.skipDirIfName = {};
+  probe.skipDirIfName.includes = [];
+  probe.skipDirIfName.notIncludes = [];
+
+  probe.skipFileIfName = {};
+  probe.skipFileIfName.includes = []
+  probe.skipFileIfName.notIncludes = []
+
+  probe.keepExtension = {};
+  probe.keepExtension.includes = ['.java', '.md', '.mjs', '.js', '.yaml'];
+
+  probe.fullPathFromOs = "off";
+
+  probe.traceSelectedDir = "off"
+  probe.traceRejectedDir = "off"
+  probe.traceSelectedFile = "off"
+  probe.traceRejectedFile = "off"
+
+  probe.regex = '/where is Charlie/';
+
+  probe.search = {};
+  probe.search.code = "on";
+  probe.search.comments = "on";
+
+  probe.traceMatchingLines = "off"
+  probe.showLinesBefore = 0
+  probe.showLinesAfter = 0
+
+
+  probe.detailedReport = "off"
+
+  probe.displayProbe = "on"
+
+  probe.separator = '|'
+
+  probe.rank_key_path_line = "off"
+  probe.rank_key_path = "off"
+  probe.rank_key = "on"
+
+
+  probe.execution = {};
+  probe.execution.mode = 'sequential';
+  // mode= parallel 
+
+  return probe;
 }
+
+
 
 /*
  from keys in probe to class attributes ready to use
@@ -66,18 +135,13 @@ export function flattenProbe() {
   // commonOrigin and list of subsequent roots
 
   this.commonOrigin =
-    this.probeRun.commonOrigin ?? "./";   //"~/";
+    this.probeRun.commonOrigin;   //"~/";
 
-  this.probeRun.rootsToExplore ??= [];
   this.rootsToExplore = this.probeRun.rootsToExplore;
+
   //cannot start with empty array
   if (!this.rootsToExplore || this.rootsToExplore.length == 0) this.rootsToExplore = [""];
 
-
-
-  // some default
-  this.probeRun.keepExtension ??= {};
-  this.probeRun.keepExtension.includes ??= [".java", ".js", ".mjs", ".yaml"];
   this.extensionsToRetain = this.probeRun.keepExtension.includes;
   // normalize extension list in .xxx lowercase
   for (let i in this.extensionsToRetain) {
@@ -86,15 +150,7 @@ export function flattenProbe() {
       this.extensionsToRetain[i] = "." + this.extensionsToRetain[i];
   }
 
-  // reject uninsteresting dir () dir starting with . are automatically rejected )
-
-  // ensure the array exists in probeRun
-  this.probeRun.skipDirIfName ??= {};
-  this.probeRun.skipDirIfName.includes ??= [];
-  this.probeRun.skipDirIfName.notIncludes ??= [];
-
-
-  // change all parameters in regex list
+  // change all parameters string in regex list
   // directories
   this.skipDirIfNameIncludesRx =
     compileIncludesRegex(this.probeRun.skipDirIfName?.includes);
@@ -102,12 +158,6 @@ export function flattenProbe() {
   this.skipDirIfNameNotIncludesRx =
     compileIncludesRegex(this.probeRun.skipDirIfName?.notIncludes);
 
-  // files
-
-  // ensure the array exists in probeRun
-  this.probeRun.skipFileIfName ??= {};
-  this.probeRun.skipFileIfName.includes ??= [];
-  this.probeRun.skipFileIfName.notIncludes ??= [];
   // then compile
   this.skipFileIfNameIncludesRx = compileIncludesRegex(this.probeRun.skipFileIfName.includes);
   this.skipFileIfNameNotIncludesRx =
@@ -115,20 +165,20 @@ export function flattenProbe() {
 
   // optional trace to set on
 
-  this.traceSelectedDir = (this.probeRun.traceSelectedDir ?? "off") === "on";
-  this.traceRejectedDir = (this.probeRun.traceRejectedDir ?? "off") === "on";
+  this.traceSelectedDir = this.probeRun.traceSelectedDir === "on";
+  this.traceRejectedDir = this.probeRun.traceRejectedDir === "on";
 
-  this.traceSelectedFile = (this.probeRun.traceSelectedFile ?? "off") === "on";
-  this.traceRejectedFile = (this.probeRun.traceRejectedFile ?? "off") === "on";
+  this.traceSelectedFile = this.probeRun.traceSelectedFile === "on"
+  this.traceRejectedFile = this.probeRun.traceRejectedFile === "on";
 
   // filter comment
 
   // by default search everywhere 
   // previous ignoreComment is : this.searchInCode && !this.searchInComments
 
-  this.probeRun.search ??= {};
-  this.searchInCode = (this.probeRun.search.code ?? "on") === "on";
-  this.searchInComments = (this.probeRun.search.comments ?? "on") === "on";
+
+  this.searchInCode = this.probeRun.search.code === "on";
+  this.searchInComments = this.probeRun.search.comments === "on";
 
   // case both to off 
   if (!this.searchInCode && !this.searchInComments) {
@@ -137,57 +187,32 @@ export function flattenProbe() {
     process.exit(1);
   }
 
-
   // detailed report
-  this.detailedReport = (this.probeRun.detailedReport ?? "off") === "on";
+  this.detailedReport = this.probeRun.detailedReport === "on";
 
-  this.probeRun.showLinesBefore ??= 0;
 
-  this.showExtraLinesBeforeMatch =
-    this.probeRun.showLinesBefore;
-
-  this.probeRun.showLinesAfter ??= 0;
-  this.showExtraLinesAfterMatch =
-    this.probeRun?.showLinesAfter;
+  this.showExtraLinesBeforeMatch = this.probeRun.showLinesBefore;
+  this.showExtraLinesAfterMatch = this.probeRun.showLinesAfter;
 
   // adjust regex and notice mode per line or multilines 
 
   this.regex = setRegexp4js(this.probeRun.regex);
 
   // output
-  this.traceMatchingLines =
-    (this.probeRun.traceMatchingLines ?? "off") === "on";
+  this.traceMatchingLines = this.probeRun.traceMatchingLines === "on";
 
-  this.fullPathFromOs = (this.probeRun.fullPathFromOs ?? "off") == "on";
+  this.fullPathFromOs = this.probeRun.fullPathFromOs == "on";
 
-  this.separator = (this.probeRun.separator ?? "\t");
-  // standard outpu options 
-  let v;
-  v = this.probeRun.rank_key_path_line ?? "off";
-  this.probeRun.rank_key_path_line =
-    (v === true || v === "on") ? "on" : "off";
-
-  v = this.probeRun.rank_key_path ?? "off";
-  this.probeRun.rank_key_path =
-    (v === true || v === "on") ? "on" : "off";
-
-  v = this.probeRun.rank_key ?? "off";
-  this.probeRun.rank_key =
-    (v === true || v === "on") ? "on" : "off";
-
-  // internal option. 
-
-  const m = this.probeRun.execution?.mode ?? "sequential";
-  this.probeRun.execution ??= {};
-  this.probeRun.execution.mode = (m === "parallel" || m === "sequential") ? m : "sequential";
-
+  this.separator = this.probeRun.separator;
+  // standard output options already set in default
+  this.displayProbe = this.probeRun.displayProbe === "on";
 }
 
 /*
    display only interesting data of current probe
   */
 
-export function displayProbe() {
+export function displayProbeOnConsole() {
   let probe = this.probeRun;
   //@todo : tamponner pour pouvoir mettre la cartouche dans les yaml
   console.log(alignTitle("probe parameters"));

@@ -13,18 +13,18 @@ Regex are powerful tools for matching patterns in strings.
       '\\bnew\\s+([A-Za-z_]\\w*(?:\\.[A-Za-z_]\\w*)*)(?:\\s*<[^>]+>)?\\s*(?:\\(|\\[)';
       regex.flags = 'g';
 
- The same for command line : 
+ The same for command line :   
 
       node search.mjs probe.yaml '/\bnew\s+([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)(?:\s*<[^>]+>)?\s*(?:\(|\[)/g'
 
 
 While constructing such a regex manually is headache, an AI can not only generate it but also explain its structure and behavior.   
 
->***When asking an AI, be specific about your use case.*** 
+>***When asking an AI, be specific about your use case.***    
 
 ### Important to remember if you patch manually
 
-👉 As soon as a regex goes through a string (JS code or YAML → JS),the \x sequences are interpreted before reaching the regex engine.
+👉 As soon as a regex goes through a string (JS code or YAML → JS),the \x sequences are interpreted before reaching the regex engine.   
 
 Therefore:   
 	•	\s, \b, \d, etc. must be double-escaped   
@@ -37,19 +37,19 @@ Therefore:
 
 ### Some basic regex concepts you may want to know can be helpful.
 
-1. **Literal Characters**:
+1. **Literal Characters**:   
    - Matches exact characters. For example, `cat` matches the string "cat".
 
-2. **Wildcards**:
+2. **Wildcards**:   
    - `.` matches any single character except newline. For example, `c.t` matches "cat", "cot", "cut", etc.
 
-3. **Character Classes**:
+3. **Character Classes**:   
    - `[abc]` matches any one of the characters a, b, or c.
    - `[a-z]` matches any lowercase letter.
    - `[0-9]` matches any digit.
    - `[^abc]` matches any character except a, b, or c.
 
-4. **Predefined Character Classes**:
+4. **Predefined Character Classes**:   
    - `\d` matches any digit, equivalent to `[0-9]`.
    - `\D` matches any non-digit.
    - `\w` matches any word character (alphanumeric + underscore), equivalent to `[a-zA-Z0-9_]`.
@@ -57,11 +57,11 @@ Therefore:
    - `\s` matches any whitespace character (spaces, tabs, line breaks).
    - `\S` matches any non-whitespace character.
 
-5. **Anchors**:
+5. **Anchors**:   
    - `^` asserts the position at the start of a line.
    - `$` asserts the position at the end of a line.
 
-6. **Quantifiers**:
+6. **Quantifiers**:   
    - `*` matches 0 or more occurrences of the preceding element.
    - `+` matches 1 or more occurrences of the preceding element.
    - `?` matches 0 or 1 occurrence of the preceding element.
@@ -69,15 +69,15 @@ Therefore:
    - `{n,}` matches n or more occurrences of the preceding element.
    - `{n,m}` matches between n and m occurrences of the preceding element.
 
-7. **Groups and Alternation**:
+7. **Groups and Alternation**:   
    - `(abc)` creates a group that matches the exact sequence "abc".
    - `|` acts as an OR operator. For example, `a|b` matches "a" or "b".
    - `(?:...)` creates a non-capturing group.
 
-8. **Escaping Special Characters**:
+8. **Escaping Special Characters**:   
    - To match special characters like `.` or `*`, escape them with a backslash (`\`). For example, `\.` matches a literal dot.
 
-9. **Lookahead and Lookbehind**:
+9. **Lookahead and Lookbehind**:   
    - `(?=...)` is a positive lookahead assertion. 
      - It ensures that what follows the current position in the string matches the pattern inside the lookahead.
    - `(?!...)` is a negative lookahead assertion. 
@@ -100,35 +100,35 @@ Each context has different escaping rules.
 - Always quote them.    
 - On macOS / Linux / WSL, prefer single quotes.   
 
-Use
+Use:   
 
       node search.mjs probe.yaml '/pattern/flags'
 
 
-Notes
+Notes:   
 - Do not escape backslashes when using single quotes.  
 - /pattern/flags is the safest and recommended CLI form.  
 
-⸻
+⸻   
 
 ### 2) YAML probe files
 - YAML values are passed as strings to JavaScript.   
 - Backslashes must be escaped once.  
 - Both combined and split forms are accepted.  
 
-Recommended
+Recommended:   
 
       regex:
          pattern: '\\bword\\s+\\w+'
          flags: 'gi'
 
-Alternative
+Alternative:   
 
 
       regex: '/\bword\s+\w+/gi'
 
 
-⸻
+⸻   
 
 ### 3) JavaScript code
 - JavaScript strings require double escaping.   
@@ -141,7 +141,7 @@ Alternative
       };
 
 
-⸻
+⸻   
 
 ### General recommendations
 
@@ -149,7 +149,7 @@ Alternative
 - Use */pattern/flags* only for CLI convenience.   
 - If a regex works in JS but not in YAML or CLI, check escaping first or ask AI.   
 
-⸻
+⸻   
 
 ### Common mistakes to avoid
 
@@ -157,5 +157,5 @@ Alternative
 - Forgetting that \ must be escaped in YAML and JS.  
 - Passing JavaScript object literals on the command line.  
 
-⸻
+⸻   
 

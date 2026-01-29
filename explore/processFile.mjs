@@ -66,6 +66,7 @@ export async function processFile(filePath) {
 
 
   const { lineStarts, emptyLines } = computeLineStartsAndEmptyCount(data)
+
   collect.count_all_lines = lineStarts.length;
  // empty lines of data code or comments or both
   collect.count_empty_lines = emptyLines;
@@ -75,12 +76,15 @@ export async function processFile(filePath) {
   const before = this.showExtraLinesBeforeMatch;
   const after = this.showExtraLinesAfterMatch;
   // get all match in one round 
+  //log(collect.regex.source)
+
   const matches = Array.from(data.matchAll(collect.regex));
 
   if (matches.length > 0) {
     collect.match = true;
     // as can be several, loop
     for (const match of matches) {
+
       // full match in match[0]
       // if groups, they are in match[1],match[2],.. concatenation 'aa : bb' 
       const keyMatch = match.length > 1

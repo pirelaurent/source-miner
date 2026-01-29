@@ -1,13 +1,12 @@
 # Probe reference guide 
 
-##  *modelProbe.yaml* 
+##  Defaults values 
 
-This file in */probes* directory reflects all the default values for scan parameters.   
-It provides a reference baseline for creating your custom project's probe.   
-In your probes, if some parameters are missing, it shows which defaults are applied.     
+Defaults values are set by internal code and are reflected into *modelProbe.yaml* as a reference baseline.    
+In your probes, you can give only what's important for your scan: if some parameters are missing, defaults applies.      
+Below are the default's explanation.     
 
 ### Starting directories 
-
 
     commonOrigin: './'
     rootsToExplore: [ ]
@@ -15,11 +14,11 @@ In your probes, if some parameters are missing, it shows which defaults are appl
    
 - *commonOrigin*: './'
     - Defines the base directory for the scan.
-    - Any relative entry in rootsToExplore is resolved from this path/
+    - Any relative entry in following parameter *rootsToExplore* is resolved from this path/
     - Paths starting with ~, ~/, or ~/somePath are resolved to the user home directory (HOMEDIR) on macOS, Linux, and Windows.
-    - For independent modules or projects, set commonOrigin to their highest common level, and list each module’s relative path in rootsToExplore.
+    - For independent modules or projects, set *commonOrigin* to their highest common level, and list each module’s relative path in *rootsToExplore*.   
 -	*rootsToExplore*: []
-    - Empty: scans all subdirectories under commonOrigin.
+    - if empty: scans all subdirectories under commonOrigin.
     - Non-empty: scans only the listed directories, each expressed as a path relative to commonOrigin. 
 
 Relative or exact path names in output:      
@@ -28,12 +27,10 @@ Relative or exact path names in output:
     - Paths are displayed relative to *commonOrigin*.  
     - When set to on, paths are displayed as full absolute paths from the OS root (useful for opening files directly in an editor from any location).
 
-#### sample   
+#### Sample   
 
     commonOrigin: '~/github/projects/'
     rootsToExplore: ['/sales/backend','sales/frontend/V2','research/aero/test']
-
-
 
 ### Filters 
 
@@ -47,13 +44,13 @@ Relative or exact path names in output:
       notIncludes: [ ]
 
 
-Behavior and rationale
+Behavior and rationale:   
 - Filters allow regex or simple names
 -	Filters are applied to the full path, not only to the last path segment.
 -	An empty *notIncludes* list disables the corresponding exclusion rule entirely.
   -	to parse exclusively a few files , set their names in *notIncludes* to reject all others
 
-Why full paths are used in filters (especially for files)
+Why full paths are used in filters (especially for files):   
 - File names alone are not sufficient: 
     The same file name may legitimately exist in multiple directories.
     Using the full path avoids ambiguities and allows precise filtering.
@@ -70,16 +67,15 @@ Why full paths are used in filters (especially for files)
 
 ### file extension 
 
-
     keepExtension:
-      includes: ['.java','.js','.yaml']  # json notation
+      includes: ['.java','.mjs','.yaml']  # json notation
 
-Or a more convenient yaml syntax allows to quickly change config using comments:
+Or a more convenient yaml syntax allows to quickly change config using comments:   
 
     keepExtension:
       includes: 
         #- '.java'
-        - '.js'
+        - '.mjs'
         #- '.yaml'
 
 
@@ -92,13 +88,13 @@ Or a more convenient yaml syntax allows to quickly change config using comments:
  
 ### regex
 
-One can set a default Regex in the probe :
-Two notations are accepted: 
+One can set a default Regex in the probe :   
+Two notations are accepted:    
 
     regex:
       pattern: '/where is Charlie/'
       flags: 'gm'.  
-    # on a line :
+    # on a unique line :
     regex: '/where is Charlie/gm'
 
 
@@ -107,16 +103,17 @@ Two notations are accepted:
 	- i (ignoreCase): case-insensitive matching.
 	- m (multiline): can find a regex crossing lines
 
- **gm** flags will be automatically enforced by *source-miner*.
+#### Source-miner choice : **gm** flags will be automatically enforced by *source-miner*.   
 
-#### search options   
+### Search perimeter   
 
+By default the search goes full text.     
 
     search:
       code: on     # search in code 
       comments: on # search in comment
 
-By default the search goes full text.  
+
 
 - with one option **off**, source is parsed in order to split code and comments. 
   - comments are :     
@@ -126,20 +123,19 @@ By default the search goes full text.
   - code is : 
     - the remaining when comments are removed 
        
-These options are useful to analyse and avoid noise in code search results.  
+These options are useful to analyse and avoid noise in code search results.     
 
-### languages'profiles 
+#### languages'profiles 
 
 Source-miner has profiles to exclude comments on demand for the following extensions:    
 
     ['c','h','cpp','hpp','rust','go','java','kt','js','mjs','ts','cs','sql','yaml','yml','sh','bash','zsh','md']
  
 
->Filtering comments is approximately 5× more expensive than a plain search.   
+>Filtering comments is approximately 5× more expensive than a plain search but rather fast.   
 >Notice that with a plain search, comment lines count is not available.   
 
 ### Output on the fly
-
 
     traceMatchingLines: off
     showLinesBefore: 0
@@ -148,12 +144,12 @@ Source-miner has profiles to exclude comments on demand for the following extens
 
 - traceMatchingLines: 
   - *off* by default : no trace of matching lines along the scan
-  - ***on***. Any match will trace the line on console when a match occurs.  
-  - Surrounding lines *before* or/and *after* can also be traced to give more context. 
-    - if any: matching lines have a star, surrounding have not 
+  - ***on*** : Any match will trace the line on console when a match occurs.  
+  - Surrounding lines *before* or/and *after* can be traced to give more context. 
+    - line number reflects the source organisation.   
+    - to help reading: matching lines have a star, surrounding have not 
 
 Sample extract below with 1 line before and 1 line after (regex *'/file/i'*):    
-
 
     --------------- File: /explore/collector.mjs --------------   
     15:
@@ -162,17 +158,23 @@ Sample extract below with 1 line before and 1 line after (regex *'/file/i'*):
     18:
     ...
 
+#### Output of current probe  
 
-### Synthetic reports' levels
+by default, main parameters of the current probe are displayed :    
+    ------------------------------- probe parameters -------------------------------
+    : roots: [./] x []
+    : regex: '/comment/gim'  (code only)
+    : extensions:[.java]
+    : skip File if: includes:[]    notIncludes: [JavaCommentAllCases]
+    --------------------------------------------------------------------------------
 
+if you don't want it in your logs, change the parameter :    `displayProbe: "off"`.   
 
-    detailedReport: off
+### End of scan reports 
 
-Similar reports are produced:   
-	•	after each individual rootToExplore when *detailedReports* is enabled;   
-	•	after the complete scan in all cases.   
+#### synthetic counters 
 
-Sample of final report: 
+final report :     
   
     -------           end of exploration of group [explore,probes]           -------
     :     matching files: 17 / 17 from 3 / 3 directories
@@ -180,22 +182,21 @@ Sample of final report:
     :     parsed lines: 1 351 empty: 420  comments: 560 (ignored)
     --------------------------- Time elapsed :  0s 26ms  ---------------------------
 
-
+ To have such a report ***at the end of each rootToExplore***, set    `detailedReport: "on"`.    
+ 
 ### Results 
 
 #### Internal collected results
 
-The internal raw results is a dictionary. (key : array of [array per match]).  
+The internal raw results is a dictionary with an array of matched lines context  per match:   
 
-    matchKey|matchGroup : [ [path | line Number | sourceLine], [path | line Number | sourceLine], ...]     
+    "matchKey|matchGroup" : [ [path | n°| line], [path | n°| line], ...]     
 
-The number of occurences of a match is the size of its associated array.     
+The rank of a unique match is the size of its associated array, ie the number of lines where it occurs.    
 
 #### Output as tables 
 
-To separate values, the separator is defined in probe and can be changed.     
-
-    separator: '|' 
+To separate values, the separator `' | '` is defined in probe and can be changed.     
 
 ### Available standard reports 
 
@@ -226,6 +227,7 @@ Three levels of tables output can be set through probe:
     2 | file | /explore/collector.mjs | 51 |     this.count_matching_files += other.count_matching_files;
     ... etc
 
+A rank of 2 indicates two matches in the same line. In raw data, there is two entries with the line.     
 
 #### ran_key_path
 
@@ -247,14 +249,18 @@ Three levels of tables output can be set through probe:
     106 | File
     20 | FILE
 
+
+## Specific reports 
+    you can organize, filter, sort raw results to produce your own reports. see section *programming*.
+
 --- 
 
-## Persist results 
+## Persist results in files
 
 #### Simplest way 
-> Route *console* to file :  *node  search.mjs someProbe.yaml '/someRegex/'*  ***>someFile.txt***
+> Route *console* to file :  *node  search.mjs someProbe.yaml '/someRegex/'*  ***>someFile.txt***   
 
-### Get results by program   
+### get raw results in code   
 
 Starting from the *search.mjs* program, you can adapt it and use the aggregated results for any further processing you need.   
 
@@ -264,17 +270,18 @@ Starting from the *search.mjs* program, you can adapt it and use the aggregated 
 
     // do something with globalCollect 
 
+---    
 
----   
+### More:
 
 #### Development using Explorateur class :
 
 - Create new apps.      
-	•	configure probe parameters programmatically.  
-	•	run multiple explorations sequentially or in parallel.  
-	•	store results in different formats: files, database.  
+	•	configure probe parameters programmatically.   
+	•	run multiple explorations sequentially or in parallel.   
+	•	store results in different formats: files, database.   
 	•	build higher-level workflows on top of the core exploration engine.   
-  •	overwrite any method of Explorateur in your own new Class.  
+  •	overwrite any method of Explorateur in your own new Class.   
 
 
 ---  

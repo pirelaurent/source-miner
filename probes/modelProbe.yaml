@@ -15,7 +15,9 @@ skipFileIfName:
 keepExtension:
   includes: 
     - '.java'
+    - '.md'
     - '.js'
+    - '.mjs'
     - '.yaml'
 
 # display path from the os root 
@@ -38,16 +40,20 @@ search:
 
 traceMatchingLines: off
 showLinesBefore: 0
-showLinesAfter : 0
+showLinesAfter: 0
 
 # intermediate report for each rootToExplore
 detailedReport: off
 
+# display probe on console at beginning 
+
+displayProbe: "on"
+
 # --- add to reports : results array 
 separator: ' | ' # ¤ \t , ; 
 
-rank_key_path_line: on
-rank_key_path: on
+rank_key_path_line: off
+rank_key_path: off
 rank_key: on
 
 # --- run options 

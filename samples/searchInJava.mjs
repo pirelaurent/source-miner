@@ -18,10 +18,6 @@ class PlusExplorateur extends Explorateur {
     super.Explorateur(probe);
   }
 
-  // override displayProbe to leave output cleaner 
-  displayProbe() {
-    // do nothing 
-  }
 
   // override end of root path exploration if something to do more with results 
   endOfARootPathExploration(root, collect) {
@@ -63,10 +59,6 @@ function showTopOccurences(dico, howMany = 10) {
   const byOccurences = dico.sortedByOccurrencesDesc();
   byOccurences.slice(0, howMany).forEach(x => console.log(x))
 }
-
-
-
-
 
 /*
   Main work : 

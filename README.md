@@ -1,6 +1,6 @@
 # source-miner
 
-Extensible scanner to extract information from modular codebases
+Extensible scanner to extract information from modular codebases.   
 
 ## Digging into large source projects
 
@@ -8,20 +8,32 @@ This tool scans multiple independent root directories in a single run, with fine
 
 The search and collect relies on standard regular expressions applied to a set of source files.   
 
+### Origin 
+
+In its early stages, this was a personal tool designed to help locate relevant parts of code in a large project. Some common uses have samples here :    
+
+- Immediate search in a corpus varying pattern on the command line ( Refer to simplest application *search.mjs*).   
+- Isolate comments from code sections to facilitate clearer analysis. (Verified by some tests within *testComments.mjs*).    
+-	Listing annotations: Identify all @ annotations in source files, along with any parameters and optional surrounding context.   (Refer to the sample file *searchJavaAnnotations.mjs*).   
+-	Keyword search and counting by code: Search for specific keywords and count their occurrences, including case-sensitive verifications (e.g., client, Client, clIent). (See the example in *searchInJava.mjs*).   
+-	A wink: the tool is run on itself to verify correct end-of-line in Markdown in this documentation(VSC and github can differ)  (Refer to *checkMd.mjs*).   
+
+### Motivation to share
+
+You never know: having control over a quick analysis code can interest other developers.   
+
 ### Probe 
 
-A probe is a YAML file that defines and drives a scan.   
-Below is a simple `probe.yaml` file to scan the source-miner project itself:   
-You can run it using internal regex.   
+A probe is a structure that pilot a scan.    
+A probe can be set by code or by some external YAML file or by a mix.   
 
-    node search.mjs probe.yaml 
+#### Using search.mjs   
 
-Or give any regex on command line.  
-
-    node search.mjs probe.yaml '/Charlie/' 
+Below is a simple `probe.yaml` file to scan the word 'file' in the source-miner project itself by : `node search.mjs probe.yaml`.   
+To override the internal regex, add one to the command line : `node search.mjs probe.yaml '/Charlie/i'`   
 
 #### probe.yaml
-It describe source-miner project itself : 
+Describe source-miner project parts when run from current installation :   
 
 
     commonOrigin: './'

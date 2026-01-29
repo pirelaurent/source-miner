@@ -7,10 +7,10 @@
 */
 
 import Explorateur from "../explore/explorateur.mjs";
-import { getProbeFromCommandLine } from "../explore/commandLine.mjs";
 import { log, warn, error } from "../explore/util/logger.mjs";
 import { logElapsedTimeSince } from "../explore/util/variousUtil.mjs";
 import { DictArray } from "../explore/util/dictArray.mjs";
+import { getDefaultProbe } from "../explore/probeUtil.mjs";
 
  
 
@@ -28,19 +28,6 @@ class PlusExplorateur extends Explorateur {
 // Match: @RequestMapping, @GetMapping, @PutMapping, @PostMapping, @PatchMapping, @DeleteMapping
 // Case-insensitive, tolerates spaces after @, global scan.
 
-// non capturing group (?: after the @. : will return the match @RequestMapping  
-const MAPPING_ANNOTATION_RE =
-  '/@\\s*(?:requestmapping|getmapping|putmapping|postmapping|patchmapping|deletemapping)\\b/i';
-
-// capturing group ( after the @ : will return the content of group :  RequestMapping (no @) 
-// final results list of keys are the same as previous
-const MAPPING_ANNOTATION_CAP_RE =
-  '/@\\s*(requestmapping|getmapping|putmapping|postmapping|patchmapping|deletemapping)\\b/i';
-
-// capture two groups : keyword and args 
-// |RequestMapping|(value="/is_background_job_running_by_job_name", method=RequestMethod.POST)
-const MAPPING_WITH_ARGS_RE =
-  '/@\\s*(requestmapping|getmapping|putmapping|postmapping|patchmapping|deletemapping)\\b\\s*(\\([^)]*\\))?/i';
 
 let startTime = new Date();
 /* 
@@ -49,24 +36,42 @@ let startTime = new Date();
  As a documentation sample : modelProbe.yaml is set with all default
  */
 
-let probe = {};
+let probe = getDefaultProbe();
 // perimeter 
 probe.commonOrigin = '~//dev/bigData/mySandBox/';
-probe.skipDirIfName = {};
 probe.skipDirIfName.includes = ['test','generated','s5000f'];
-probe.separator = '|';
 
-// adaptation 
+// non capturing group (?: after the @. : will return the match @RequestMapping  
+const MAPPING_ANNOTATION_RE =
+  '/@\\s*(?:requestmapping|getmapping|putmapping|postmapping|patchmapping|deletemapping)\\b/i';
+
+// for info : capturing group ( after the @ : will return the content of group :  RequestMapping (no @) 
+// final results list of keys are the same as previous
+const MAPPING_ANNOTATION_CAP_RE =
+  '/@\\s*(requestmapping|getmapping|putmapping|postmapping|patchmapping|deletemapping)\\b/i';
+
 console.log( '\n--------------- 1st tour to count matching keys -----------') 
 probe.regex = MAPPING_ANNOTATION_RE;
+// no automatic display 
+probe.displayProbe = "off";
 // standard output of key:occurences
 probe.rank_key = 'on';
 await new PlusExplorateur(probe).run();
+
+/*
+  selection with capture group 
+  capture two groups : keyword and args 
+  ex: RequestMapping | (value="/is_background_job_running_by_job_name", method=RequestMethod.POST)
+*/
+
+const MAPPING_WITH_ARGS_RE =
+  '/@\\s*(requestmapping|getmapping|putmapping|postmapping|patchmapping|deletemapping)\\b\\s*(\\([^)]*\\))?/i';
 
 
 console.log( '\n--------------- Another tour to show extraction of matching keys  with args -----------') 
 probe.regex = MAPPING_WITH_ARGS_RE;
 probe.rank_key = 'off';
+
 
 let results = await new PlusExplorateur(probe).run();
 
@@ -80,7 +85,6 @@ for (const primary of Object.keys(splitResults)) {
   for (const one of Object.keys(justOne).slice(0,howMany)){
     console.log(one)
   }
-
 }
 
 console.log('\n ----  searchJavaAnnotation ends after  ' + logElapsedTimeSince(startTime))

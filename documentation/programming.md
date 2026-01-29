@@ -1,14 +1,14 @@
-# Programming aspects
+# Programming aspects  
 
 ## **Explorateur.mjs** 
 
-The main class responsible for performing the search and collecting results.
+The main class responsible for performing the search and collecting results.   
 
 ####  `.mjs` choice
 
-**ESM (ECMAScript Modules)** is the standard JavaScript module system defined by the ECMAScript specification and used by modern runtimes (browsers and Node.js).
+**ESM (ECMAScript Modules)** is the standard JavaScript module system defined by the ECMAScript specification and used by modern runtimes (browsers and Node.js).   
 
-Using the `.mjs` extension:
+Using the `.mjs` extension:   
 - makes the module type explicit per file,
 - avoids relying on `"type": "module"` in `package.json`,
 - enables native `import` / `export` syntax to structure the codebase clearly.   
@@ -16,17 +16,17 @@ Using the `.mjs` extension:
 
 ### Externalized implementations
 
-Explorateur delegates some methods to external functions like the following (mind ***call(this***,...))
+Explorateur delegates some methods to external functions like the following (mind ***call(this***,...)).   
 
     import { processDirectory as processDirectoryImpl } from "./processDirectory.mjs";
     async processDirectory(directoryPath) { return processDirectoryImpl.call(this, directoryPath) }   
 
-This preserves:
+This preserves:   
 - access to instance state
 - polymorphism
 - subclass overrides
 
-⚠️ Subclasses overriding these methods must preserve the return contract.
+⚠️ Subclasses overriding these methods must preserve the return contract.   
 
 ---
 
@@ -44,19 +44,19 @@ This preserves:
     let explore = new Explorateur(probe);
     await explore.run();
 
-To load a probe programmatically, outside command line:
+To load a probe programmatically, outside command line:   
 
     let probe = readFromFile("myProbe.yaml")
     
 
 ### Changing probe parameters by code
 
-To understand probe configuration, see [probe reference guide](../README.md#probe-reference-guide)
+To understand probe configuration, see [probe reference guide](../README.md#probe-reference-guide)   
 
 Any missing entry takes default values as shown by *modelProbe.yaml*.   
 Any YAML entry can be set programmatically, provided the yaml structure is respected:    
 
-Examples: 
+Examples:   
 
     // restrict search to Java files only
     probe.keepExtension.includes = [".java"];
@@ -71,16 +71,12 @@ Examples:
     // trace selected lines on the fly  
     probe.traceMatchingLines = "on"
 
-If you want to replace the probe in an existing instance:
-
-    explore.setProbe(anotherProbe);
-
 ---
 
 
 ## Designing your classes
 
-A way to adapt behavior to your needs is to create you class, inherit from `Explorateur` and add or overwrite methods.
+A way to adapt behavior to your needs is to create you class, inherit from `Explorateur` and add or overwrite methods.   
 
     class PlusExplorateur extends Explorateur {
       constructor(probe) {
@@ -92,19 +88,19 @@ A way to adapt behavior to your needs is to create you class, inherit from `Expl
 
 ## Useful methods
 
-There are two categories of methods in `Explorateur`:
+There are two categories of methods in `Explorateur`:   
 
 - **Core methods**: contain the traversal and analysis logic
 - **Event methods**: empty hooks meant to be overridden
 
-See the source: `explore/explorateur.mjs`
+See the source: `explore/explorateur.mjs`   
 
 ---
 ### Overriding core methods 
 
-Any method can be overridden replacing or reusing parent method via `super`.
+Any method can be overridden replacing or reusing parent method via `super`.   
 
-Sample : trace and skip a special directory, overwritting *skipDirectory* method: 
+Sample : trace and skip a special directory, overwritting *skipDirectory* method:    
 
     /*
     Contract
@@ -125,9 +121,9 @@ Sample : trace and skip a special directory, overwritting *skipDirectory* method
 
 ### Overriding event methods
 
-An event method has no code inside main explorateur, just an empty implementation you can replace.  
+An event method has no code inside main explorateur, just an empty implementation you can replace.   
 
-Example 1: Detect out of norms files, candidates to be refactored
+Example 1: Detect out of norms files, candidates to be refactored:   
 
     endOfProcessingFileEvent(collect) {
       const nb = collect.count_all_lines;
@@ -139,7 +135,7 @@ Example 1: Detect out of norms files, candidates to be refactored
       }
     }
 
-Example 2: Detect overcrowed final directories candidates to reorganization
+Example 2: Detect overcrowed final directories candidates to reorganization:   
 
     endOfProcessingDirEvent(collect) {
       const nb = collect.count_all_visited_files;
@@ -155,20 +151,20 @@ Example 2: Detect overcrowed final directories candidates to reorganization
 
 ## Collecting data
 
-A `Collect` instance is created:
+A `Collect` instance is created:   
 - for each file,
 - for each directory,
 - for each root,
 - and for the final result.
 
-See source code ***collector.mjs*** for detailed content.
+See source code ***collector.mjs*** for detailed content.   
 
 ### Recursion tree and collect(s) consolidation
 
-•	 Each scanned file produces its own new `Collect`.  
-•	 Each directory merges the collects of its children, files and subDirs.  
-•	 Results propagate through the recursion.  
-•	 At the end of a root traversal, the method `endOfARootPathExploration` is called and can be hooked.   
+-	Each scanned file produces its own new `Collect`.   
+-	Each directory merges the collects of its children, files and subDirs.   
+-	Results propagate through the recursion.   
+-	At the end of a root traversal, the method `endOfARootPathExploration` is called and can be hooked.   
 
       export function endOfARootPathExploration(root, collect) {
       // default summary output code is here
@@ -176,7 +172,7 @@ See source code ***collector.mjs*** for detailed content.
 
 ### Multiple roots
 
-When several `rootsToExplore` are defined:
+When several `rootsToExplore` are defined:   
 
 •	 They are processed by a loop in `run()` method,   
 •	 Each root produces its own collect,   
@@ -193,7 +189,7 @@ This final collect is returned by `run()` for processing outside if useful:
 
 ## Collect keeps details of all matches
 
-Each `Collect` contains a dictionary of matches:
+Each `Collect` contains a dictionary of matches:   
 
     // DictArray: key → array of values
     this.key_array_of_path = new DictArray();
@@ -201,7 +197,7 @@ Each `Collect` contains a dictionary of matches:
 ### key:value
 #### Key structure
 
-The key comes from from the regex result:
+The key comes from from the regex result:   
 
 - simple regex:
   - `"File"`
@@ -211,17 +207,17 @@ The key comes from from the regex result:
 
 #### Value structure
 
-Every elementary match is stored as:
+Every elementary match is stored as:   `[ file's fullPath, line n°, line ]`
 
-    [ file's fullPath, lineNumber, lineText ]
-
-Value structure : array of elementary matches 
+Value structure : array of elementary matches :   
 
     key: [
-      [fullPath, lineNumber, lineText],[fullPath, lineNumber, lineText],...
+      [fullPath, n°, line],
+      [fullPath, n°, line],
+      ...
     ]
 
-If a same key is found several times on the same line, each match will have its entry. 
+If a same key is found several times on the same line, each match will have its entry.   
 
 ---
 
@@ -229,7 +225,7 @@ If a same key is found several times on the same line, each match will have its 
 
 ### standard 
 
-See standard reports in chapter Probe :
+See standard reports in chapter Probe :   
 
     rank_key_path_line: on
     rank_key_path: on
@@ -241,12 +237,12 @@ See standard reports in chapter Probe :
 
 ### Sample to look at : *samples/searchInJava.mjs*
 
-This code runs three successive regex with catch groups on a Java project to search:
+This code runs three successive regex with catch groups on a Java project to search:   
 - `new` 
 - `import|package` in one round 
 - `class|Interface|enum|record` in one round
 
-Results are collected in three lists :
+Results are collected in three lists :   
 
     new|classInstantiatedName:  [[path,No,line][path,No,line] etc.]
 
@@ -260,7 +256,7 @@ Results are collected in three lists :
 
 #### ranking and output top 10
 
-  The rank is the number of match per key ( array size of [[...][...]...] ).  
+  The rank is the number of match per key ( array size of [[...][...]...] ).   
   The sample code :   
     - dispatch by distinct first part of match    
     - sort by rank    
@@ -283,7 +279,7 @@ Results are collected in three lists :
 
 ### do more 
 
-On this basis, you can  
+On this basis, you can   
 - cross import and package lists to check internal/external references 
 - create graph of dependencies linking files through import and package references 
 - store your results in file or in db 
@@ -302,7 +298,7 @@ It searches in one round all annotions like @xxxmapping :
     const MAPPING_ANNOTATION_RE =
       '/@\\s*(?:requestmapping|getmapping|putmapping|postmapping|patchmapping|deletemapping)\\b/i';
 
-The simple standard output option `probe.rank_key = 'on';` will give the follwing output:
+The simple standard output option `probe.rank_key = 'on';` will give the follwing output:   
 
       ------------------------ Global : total number of key   ------------------------
       Nb|key
@@ -322,7 +318,7 @@ It searches the same keys but capture the parameters of the annotations :
     const MAPPING_WITH_ARGS_RE =
       '/@\\s*(requestmapping|getmapping|putmapping|postmapping|patchmapping|deletemapping)\\b\\s*(\\([^)]*\\))?/i'; 
 
- The results are catched after the run then dispatched in their own collection 
+ The results are catched after the run then dispatched in their own collection   
 
     let results = await new PlusExplorateur(probe).run();
     let allAnnotations = results.key_array_of_path;
@@ -347,7 +343,7 @@ As a demonstration code, it list the first lines of each collection like the one
 
 #### Async run 
 
-Some methods are asynchronous, but a deliberate design choice was made:
+Some methods are asynchronous, but a deliberate design choice was made:   
 
 > Directory traversal is intentionally **sequential and deterministic** by default.  (*probe.executionMode = "sequential"*)   
 > Files and subdirectories are processed one at a time to keep ordering, reporting, and resource usage predictable.   
@@ -356,7 +352,7 @@ But for experiment, you can try *probe.executionMode = "parallel"* , parallel ru
 
 #### log(..) function in place of console.log(..)
 
-For debug use log(..) that add the source and line where this log occurs : *[source code:line number] text of log*
+For debug use log(..) that add the source and line where this log occurs : *[source code:line number] text of log*   
 
     log(`rejected new ${rejectNew}`) // in source 
     # output on console : 
@@ -364,6 +360,7 @@ For debug use log(..) that add the source and line where this log occurs : *[sou
 
 ---  
 
-  [Installation](Install.md)  
+  [Installation](Install.md)   
   [probe reference guide](probe.md)      
-  [master regex](regexHelp.md) 
+  [master regex](regexHelp.md)   
+  

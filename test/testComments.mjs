@@ -18,10 +18,6 @@ class TestExplorateur extends Explorateur {
         this.title = title;
     }
 
-    // overwrite displayProbe to avoid cluttering test output 
-    displayProbe() {
-        //super.displayProbe() // uncomment if need main probe parts on console
-    }
 
     // overwrite end of scan to get results and compare 
 
